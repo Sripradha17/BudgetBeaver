@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { api } from "../lib/api.js";
-import AboutCarousel from "../components/AboutCarousel.jsx";
+import aboutIntroGif from "../assets/illustrations/about_page.gif";
 
 export default function LoginPage({ onLoggedIn }) {
   const [mode, setMode] = useState("login"); // "login" | "signup"
@@ -28,8 +28,8 @@ export default function LoginPage({ onLoggedIn }) {
   }
 
   return (
-    <div className="fixed inset-0 overflow-hidden px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
-      <div className="mx-auto grid h-full w-full max-w-6xl items-center gap-5 md:grid-cols-[minmax(0,0.95fr)_minmax(19rem,23rem)] lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-8">
+    <div className="min-h-screen overflow-y-auto px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-5 py-4 md:grid-cols-[minmax(0,0.95fr)_minmax(19rem,23rem)] lg:min-h-[calc(100vh-2.5rem)] lg:gap-8 lg:py-0">
         <div className="flex min-w-0 flex-col items-center gap-4 text-center md:items-start md:text-left lg:gap-5">
           <div className="inline-flex items-center gap-3 rounded-full border border-white/70 bg-white/72 px-4 py-2 shadow-[0_18px_40px_-28px_rgba(90,76,118,0.45)] backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-coral shadow-[0_0_0_7px_rgba(255,154,118,0.18)]" />
@@ -51,7 +51,13 @@ export default function LoginPage({ onLoggedIn }) {
               Track spending, bills, and savings with a lighter visual style and concise summaries.
             </p>
           </div>
-          <AboutCarousel className="w-full max-w-md md:max-w-[30rem] lg:max-w-[34rem]" compact />
+          <div className="w-full max-w-md overflow-hidden rounded-[1.65rem] border border-white/70 shadow-[0_30px_70px_-42px_rgba(67,54,87,0.38)] md:max-w-[30rem] lg:max-w-[34rem]">
+            <img
+              src={aboutIntroGif}
+              alt="Budget Raccoon walkthrough"
+              className="block h-auto w-full"
+            />
+          </div>
         </div>
 
         <form

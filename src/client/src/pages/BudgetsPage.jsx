@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { Download, Check, Target } from "lucide-react";
+import { Download, Check } from "lucide-react";
 import { useData } from "../context/DataContext.jsx";
 import { useMonth } from "../context/MonthContext.jsx";
 import { monthKey } from "../lib/month.js";
 import Card from "../components/Card.jsx";
 import Pagination from "../components/Pagination.jsx";
 import BudgetCategoryRow from "../components/BudgetCategoryRow.jsx";
-import FinanceIllustration from "../components/illustrations/FinanceIllustration.jsx";
+import PageHero from "../components/PageHero.jsx";
+import { illustrations, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 import { exportMonthToExcel } from "../lib/exportExcel.js";
 import { getEffectiveBudget, isOneTimeBudget } from "../lib/budgets.js";
 
@@ -88,19 +89,22 @@ export default function BudgetsPage() {
 
   return (
     <div className="space-y-4">
-      <FinanceIllustration type="budget" size={110} className="hidden sm:block" />
-
-      <div className="flex items-center justify-between">
-        <h2 className="font-bold text-lg flex items-center gap-1.5">
-          <Target size={18} className="text-coral" /> Monthly budgets
-        </h2>
+      <PageHero
+        tint="gold"
+        eyebrow="Budget"
+        title="Plan with intention"
+        description="Set a monthly limit per category, then track how close you are as the month goes."
+        image={illustrations.budget}
+        aspect={HERO_ASPECT}
+        edgeColor={illustrationEdgeColor.budget}
+      >
         <button
           onClick={handleExport}
-          className="flex items-center gap-1.5 rounded-lg bg-plum text-white text-sm font-medium px-3 py-2 hover:bg-plum/90"
+          className="flex w-fit items-center gap-1.5 rounded-full bg-white text-[#7a5a1e] text-sm font-bold px-4 py-2.5 hover:bg-white/90"
         >
           <Download size={16} /> Export to Excel
         </button>
-      </div>
+      </PageHero>
 
       <Card>
         <h3 className="font-semibold text-sm mb-3">Edit a budget</h3>

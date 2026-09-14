@@ -1,30 +1,43 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { LayoutDashboard, Receipt, Wallet, Target, Flag, BarChart3, ArrowRight } from "lucide-react";
+import {
+  LayoutDashboard,
+  Receipt,
+  Wallet,
+  Target,
+  Flag,
+  BarChart3,
+  ArrowUpRight,
+  ArrowDownRight,
+  Plus,
+  PiggyBank,
+  TrendingDown,
+} from "lucide-react";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
 import { useData } from "../context/DataContext.jsx";
 import { useMonth } from "../context/MonthContext.jsx";
 import { monthKey } from "../lib/month.js";
 import { buildMonthlyTrends } from "../lib/trends.js";
-import FinanceIllustration from "../components/illustrations/FinanceIllustration.jsx";
 import Card from "../components/Card.jsx";
+import PageHero from "../components/PageHero.jsx";
+import RecentActivity from "../components/RecentActivity.jsx";
+import { illustrations, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 
 const QUICK_LINKS = [
-  { to: "/overview", label: "Overview", description: "Get a clear picture of your finances", icon: LayoutDashboard, tone: "forest" },
-  { to: "/expenses", label: "Expenses", description: "Track and analyze spending", icon: Receipt, tone: "coral" },
-  { to: "/income", label: "Income", description: "Monitor incoming money", icon: Wallet, tone: "sky" },
-  { to: "/budget", label: "Budget", description: "Manage monthly spending limits", icon: Target, tone: "gold" },
-  { to: "/goals", label: "Goals", description: "Monitor savings progress", icon: Flag, tone: "plum" },
-  { to: "/reports", label: "Reports", description: "Review financial trends", icon: BarChart3, tone: "teal" },
+  { to: "/overview", label: "Overview", icon: LayoutDashboard },
+  { to: "/expenses", label: "Expenses", icon: Receipt },
+  { to: "/income", label: "Income", icon: Wallet },
+  { to: "/budget", label: "Budget", icon: Target },
+  { to: "/goals", label: "Goals", icon: Flag },
+  { to: "/reports", label: "Reports", icon: BarChart3 },
 ];
-
-const TONE_CLASSES = {
-  forest: "bg-forest/10 text-forest",
-  coral: "bg-coral/10 text-[#c15a34]",
-  sky: "bg-sky/15 text-[#2e6f96]",
-  gold: "bg-gold/15 text-[#8A5F22]",
-  plum: "bg-plum/15 text-[#7c5bab]",
-  teal: "bg-teal/15 text-teal",
-};
 
 function greeting() {
   const hour = new Date().getHours();
@@ -33,51 +46,206 @@ function greeting() {
   return "Good evening";
 }
 
+function CurrencyTooltip({ active, payload, label, currency }) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-lg border border-mist bg-surface2 px-3 py-2 text-xs shadow-soft">
+      <p className="mb-0.5 font-semibold text-ink">{label}</p>
+      <p className="text-coral">
+        Spent: {currency}
+        {payload[0].value.toLocaleString()}
+      </p>
+    </div>
+  );
+}
+
+function GoalRing({ pct }) {
+  const clamped = Math.max(0, Math.min(100, pct));
+  return (
+    <div
+      className="relative h-12 w-12 shrink-0 rounded-full"
+      style={{ background: `conic-gradient(#2B5F47 ${clamped * 3.6}deg, #E4E4DA 0deg)` }}
+    >
+      <div className="absolute inset-[3px] flex items-center justify-center rounded-full bg-surface text-[10px] font-extrabold text-forest">
+        {clamped.toFixed(0)}%
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
-  const { expenses, income, settings } = useData();
+  const { expenses, income, categories, goals, settings } = useData();
   const { selectedMonth, key } = useMonth();
+
+  const categoryById = useMemo(() => {
+    const map = {};
+    categories.forEach((c) => (map[c.id] = c));
+    return map;
+  }, [categories]);
 
   const trendData = useMemo(() => buildMonthlyTrends(expenses, income, selectedMonth, 6), [expenses, income, selectedMonth]);
   const monthExpenses = useMemo(() => expenses.filter((e) => monthKey(new Date(e.date)) === key), [expenses, key]);
   const monthIncome = useMemo(() => income.filter((i) => monthKey(new Date(i.date)) === key), [income, key]);
-  const currentBalance = trendData[trendData.length - 1]?.balance ?? monthIncome.reduce((s, i) => s + i.amount, 0) - monthExpenses.reduce((s, e) => s + e.amount, 0);
+
+  const totalIncome = monthIncome.reduce((s, i) => s + i.amount, 0);
+  const totalExpenses = monthExpenses.reduce((s, e) => s + e.amount, 0);
+  const currentBalance = trendData[trendData.length - 1]?.balance ?? totalIncome - totalExpenses;
+  const prevBalance = trendData[trendData.length - 2]?.balance ?? null;
+  const balanceChangePct =
+    prevBalance && prevBalance !== 0 ? ((currentBalance - prevBalance) / Math.abs(prevBalance)) * 100 : null;
+  const hasChange = balanceChangePct !== null && Number.isFinite(balanceChangePct);
+
+  const goalsSummary = useMemo(() => {
+    if (!goals.length) return null;
+    let target = 0;
+    let progress = 0;
+    goals.forEach((g) => {
+      target += g.targetAmount || 0;
+      if (g.linkedCategoryId) {
+        const start = new Date(g.startDate).getTime();
+        progress += expenses
+          .filter((e) => e.category === g.linkedCategoryId && new Date(e.date).getTime() >= start)
+          .reduce((s, e) => s + e.amount, 0);
+      } else {
+        progress += g.manualProgress || 0;
+      }
+    });
+    return { target, progress, pct: target > 0 ? Math.min(100, (progress / target) * 100) : 0 };
+  }, [goals, expenses]);
+
+  const recentActivity = useMemo(() => {
+    const expenseItems = monthExpenses.map((e) => ({
+      id: e._id,
+      type: "expense",
+      date: e.date,
+      amount: e.amount,
+      label: e.note || categoryById[e.category]?.label || "Expense",
+      subtitle: categoryById[e.category]?.label || "",
+      color: categoryById[e.category]?.badgeColor,
+    }));
+    const incomeItems = monthIncome.map((i) => ({
+      id: i._id,
+      type: "income",
+      date: i.date,
+      amount: i.amount,
+      label: i.note || (i.person === "spouse" ? settings.spouseLabel : settings.myLabel),
+      subtitle: "Income",
+    }));
+    return [...expenseItems, ...incomeItems].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 6);
+  }, [monthExpenses, monthIncome, categoryById, settings]);
+
   const fmt = (n) => `${settings.currency}${Math.abs(n).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
   return (
     <div className="space-y-6">
-      <div className="overflow-hidden rounded-[1.75rem] border border-white/75 bg-surface shadow-soft">
-        <FinanceIllustration type="home" size={220} />
-        <div className="p-5 sm:p-7">
-          <h1 className="font-display text-2xl font-extrabold text-ink sm:text-[1.7rem]">
-            {greeting()}, {settings.myLabel}
-          </h1>
-          <p className="mt-1.5 max-w-md text-sm text-ink/60">
-            Here's your budgeting home base — jump into any section below to track spending, plan
-            budgets, and keep your savings goals on course.
+      <PageHero
+        tint="forest"
+        eyebrow="Dashboard"
+        title={`${greeting()}, ${settings.myLabel}`}
+        description="Here's your money at a glance this month — spending, income, and how close your goals are."
+        image={illustrations.dashboard}
+        aspect={HERO_ASPECT}
+        edgeColor={illustrationEdgeColor.dashboard}
+        heroHeight={500}
+      >
+        <div>
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-white/55">Safe to spend</p>
+          <p className="mt-1 font-display text-4xl font-extrabold leading-none tabular-nums sm:text-5xl">
+            {currentBalance < 0 ? "-" : ""}
+            {fmt(currentBalance)}
           </p>
-          <p className="mt-4 text-xs font-extrabold uppercase tracking-[0.2em] text-ink/40">Safe to spend this month</p>
-          <p className={`font-display text-3xl font-extrabold tabular-nums ${currentBalance < 0 ? "text-coral" : "text-forest"}`}>
+          {hasChange ? (
+            <div
+              className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${
+                balanceChangePct >= 0 ? "bg-white/18 text-white" : "bg-black/15 text-white/90"
+              }`}
+            >
+              {balanceChangePct >= 0 ? <ArrowUpRight size={13} /> : <ArrowDownRight size={13} />}
+              {Math.abs(balanceChangePct).toFixed(0)}% from last month
+            </div>
+          ) : (
+            <p className="mt-3 text-xs text-white/60">This month's income minus spending.</p>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-2.5">
+          <Link
+            to="/expenses"
+            className="flex items-center gap-1.5 rounded-full bg-white text-forest-dark text-sm font-bold px-4 py-2.5 hover:bg-white/90"
+          >
+            <Plus size={15} /> Add expense
+          </Link>
+          <Link
+            to="/overview"
+            className="flex items-center gap-1.5 rounded-full border border-white/30 text-white text-sm font-bold px-4 py-2.5 hover:bg-white/10"
+          >
+            View full overview
+          </Link>
+        </div>
+      </PageHero>
+
+      {/* Stat tiles: balance, income, expenses, goal progress ring */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+        <div className="rounded-[1.6rem] border border-forest/25 bg-forest/[0.1] p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]">
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-ink/50">Total balance</p>
+          <p className="mt-2 font-display text-lg font-extrabold tabular-nums text-forest sm:text-2xl">
             {currentBalance < 0 ? "-" : ""}
             {fmt(currentBalance)}
           </p>
         </div>
+        <div className="rounded-[1.6rem] border border-sky/30 bg-sky/[0.14] p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]">
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-ink/50">Monthly income</p>
+          <p className="mt-2 font-display text-lg font-extrabold tabular-nums text-[#2e6f96] sm:text-2xl">{fmt(totalIncome)}</p>
+        </div>
+        <div className="rounded-[1.6rem] border border-coral/30 bg-coral/[0.12] p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]">
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-ink/50">Monthly expenses</p>
+          <p className="mt-2 font-display text-lg font-extrabold tabular-nums text-[#c15a34] sm:text-2xl">{fmt(totalExpenses)}</p>
+        </div>
+        <div className="flex items-center gap-3 rounded-[1.6rem] border border-plum/30 bg-plum/[0.14] p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]">
+          <div className="min-w-0">
+            <p className="text-[11px] font-extrabold uppercase leading-tight tracking-[0.18em] text-ink/50">Savings goal</p>
+            <p className="mt-2 truncate font-display text-lg font-extrabold tabular-nums text-[#7c5bab] sm:text-xl">
+              {goalsSummary ? fmt(goalsSummary.progress) : "—"}
+            </p>
+          </div>
+          {goalsSummary && <GoalRing pct={goalsSummary.pct} />}
+        </div>
       </div>
 
+      {/* Asymmetric second row: spending chart (wider) + recent activity (narrower) */}
+      <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <Card>
+          <div className="mb-1 flex items-center justify-between">
+            <h3 className="flex items-center gap-1.5 font-bold text-sm">
+              <TrendingDown size={15} className="text-coral" /> Spending overview
+            </h3>
+            <span className="text-xs text-ink/40">Last 6 months</span>
+          </div>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={trendData} margin={{ left: 0, right: 4, top: 12 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#eadcf3" vertical={false} />
+              <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#9b8ea3" }} axisLine={false} tickLine={false} />
+              <Tooltip content={<CurrencyTooltip currency={settings.currency} />} cursor={{ fill: "rgba(215,127,108,0.06)" }} />
+              <Bar dataKey="expenses" name="Spent" fill="#D77F6C" radius={[8, 8, 0, 0]} maxBarSize={38} />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+
+        <RecentActivity items={recentActivity} currency={settings.currency} />
+      </div>
+
+      {/* Compact secondary nav row — varies the page rhythm instead of another card grid */}
       <div>
-        <h2 className="mb-3 font-display text-lg font-bold text-ink">Explore your finances</h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {QUICK_LINKS.map(({ to, label, description, icon: Icon, tone }, idx) => (
-            <Link key={to} to={to} className="block animate-page-in" style={{ animationDelay: `${idx * 40}ms` }}>
-              <Card className="group h-full hover:-translate-y-0.5">
-                <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${TONE_CLASSES[tone]}`}>
-                  <Icon size={18} />
-                </div>
-                <div className="mt-3 flex items-center justify-between gap-2">
-                  <h3 className="font-display text-base font-bold text-ink">{label}</h3>
-                  <ArrowRight size={16} className="text-ink/25 transition-transform group-hover:translate-x-0.5 group-hover:text-ink/50" />
-                </div>
-                <p className="mt-1 text-sm text-ink/55">{description}</p>
-              </Card>
+        <h2 className="mb-3 font-display text-base font-bold text-ink">Jump to</h2>
+        <div className="scroll-fade-x flex gap-2.5 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-6">
+          {QUICK_LINKS.map(({ to, label, icon: Icon }) => (
+            <Link
+              key={to}
+              to={to}
+              className="flex shrink-0 items-center gap-2 rounded-full border border-mist bg-surface px-4 py-2.5 text-sm font-semibold text-ink/70 transition-colors hover:border-forest/30 hover:bg-sage-light hover:text-forest sm:shrink sm:justify-center"
+            >
+              <Icon size={15} className="text-ink/40" />
+              {label}
             </Link>
           ))}
         </div>

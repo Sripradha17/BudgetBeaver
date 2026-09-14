@@ -8,6 +8,8 @@ import { CURRENCIES } from "../lib/currency.js";
 import { exportExpensesCsv, exportIncomeCsv } from "../lib/exportData.js";
 import Card from "../components/Card.jsx";
 import CategoryBadge from "../components/CategoryBadge.jsx";
+import PageHero from "../components/PageHero.jsx";
+import { illustrations, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 
 export default function SettingsPage({ onLogout }) {
   const {
@@ -98,6 +100,16 @@ export default function SettingsPage({ onLogout }) {
 
   return (
     <div className="space-y-5">
+      <PageHero
+        tint="plum"
+        eyebrow="Settings"
+        title="Small changes, big control"
+        description="Fine-tune currency, categories, and reminders — make Budget Raccoon fit exactly how you manage money."
+        image={illustrations.goalsAdventure}
+        aspect={HERO_ASPECT}
+        edgeColor={illustrationEdgeColor.goalsAdventure}
+      />
+
       {userEmail && (
         <Card>
           <h2 className="font-bold text-lg mb-2 flex items-center gap-1.5">

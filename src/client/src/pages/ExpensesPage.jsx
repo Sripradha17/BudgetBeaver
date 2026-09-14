@@ -24,7 +24,9 @@ import { getMissingRecurringForMonth } from "../lib/recurring.js";
 import { useUndoDelete } from "../hooks/useUndoDelete.js";
 import { fetchExchangeRate, CURRENCIES } from "../lib/currency.js";
 import Card from "../components/Card.jsx";
-import FinanceIllustration from "../components/illustrations/FinanceIllustration.jsx";
+import PhotoBanner from "../components/PhotoBanner.jsx";
+import PageHero from "../components/PageHero.jsx";
+import { illustrations, illustrationAspect, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 import CategoryChipPicker from "../components/CategoryChipPicker.jsx";
 import StatTile from "../components/StatTile.jsx";
 import ImportExpenses from "../components/ImportExpenses.jsx";
@@ -252,7 +254,15 @@ export default function ExpensesPage() {
 
   return (
     <div className="space-y-5">
-      <FinanceIllustration type="expenses" size={110} className="hidden sm:block" />
+      <PageHero
+        tint="coral"
+        eyebrow="Expenses"
+        title="Track every dollar"
+        description="Log it in a few seconds — the raccoon keeps a running tally, categorized and ready to export."
+        image={illustrations.expenses}
+        aspect={HERO_ASPECT}
+        edgeColor={illustrationEdgeColor.expenses}
+      />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <StatTile label="Income" value={fmt(totals.income)} icon={TrendingUp} tone="sky" />
@@ -272,7 +282,7 @@ export default function ExpensesPage() {
             <h2 className="font-bold text-lg flex items-center gap-1.5">
               <Wallet size={18} className="text-coral" /> What did you spend?
             </h2>
-            <p className="text-xs text-ink/45 mt-0.5">Log it in a few seconds — the raccoon keeps track of the rest.</p>
+            <p className="text-xs text-ink/45 mt-0.5">Pick a category, enter the amount, done.</p>
           </div>
           <div className="flex items-center gap-3">
             {duplicateGroups.length > 0 && (
@@ -493,7 +503,12 @@ export default function ExpensesPage() {
 
         {monthExpenses.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-4 text-center">
-            <FinanceIllustration type="emptyExpenses" size={110} className="w-full max-w-[220px]" />
+            <PhotoBanner
+              src={illustrations.expensesEmpty}
+              tint="coral"
+              aspect={illustrationAspect.expensesEmpty}
+              className="w-full max-w-[500px]"
+            />
             <p className="text-ink/50 text-sm">No expenses logged yet — add one above to get started.</p>
           </div>
         ) : visibleExpenses.length === 0 ? (

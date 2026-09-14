@@ -5,7 +5,8 @@ import { useMonth } from "../context/MonthContext.jsx";
 import { monthKey, toInputDate, fromInputDate } from "../lib/month.js";
 import { useUndoDelete } from "../hooks/useUndoDelete.js";
 import Card from "../components/Card.jsx";
-import FinanceIllustration from "../components/illustrations/FinanceIllustration.jsx";
+import PageHero from "../components/PageHero.jsx";
+import { illustrations, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 import Pagination from "../components/Pagination.jsx";
 import UndoToast from "../components/UndoToast.jsx";
 
@@ -86,7 +87,15 @@ export default function IncomePage() {
 
   return (
     <div className="space-y-5">
-      <FinanceIllustration type="income" size={110} className="hidden sm:block" />
+      <PageHero
+        tint="teal"
+        eyebrow="Income"
+        title="Every dollar in"
+        description="Track paychecks and other income as it lands — yours, theirs, and the combined picture."
+        image={illustrations.income}
+        aspect={HERO_ASPECT}
+        edgeColor={illustrationEdgeColor.income}
+      />
 
       <div className="grid grid-cols-3 gap-3">
         <IncomeStatCard label={settings.myLabel} value={fmt(totals.mine)} icon={Wallet} tone="teal" />
@@ -140,6 +149,17 @@ export default function IncomePage() {
           </button>
         </form>
       </Card>
+
+      {/* Same hero language, second time on the page — a quieter inspirational
+          break rather than another data card. */}
+      <PageHero
+        tint="forest"
+        title="A healthier you, a brighter tomorrow"
+        description="Every source of income you log here is one step closer to your goals."
+        image={illustrations.wellness}
+        aspect={HERO_ASPECT}
+        edgeColor={illustrationEdgeColor.wellness}
+      />
 
       <Card>
         <h2 className="font-bold text-lg mb-3">This month's income</h2>

@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import Raccoon from "../mascot/Raccoon.jsx";
+import mascot from "../../assets/illustrations/mascot.jpg";
 import MonthNavigator from "../MonthNavigator.jsx";
 import { NAV_ITEMS } from "./navItems.js";
 
@@ -19,8 +19,8 @@ export default function TopBar() {
       <div className="flex items-center justify-between gap-2 px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-2.5">
           {isHome && (
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sage-light overflow-hidden lg:hidden">
-              <Raccoon pose="idle" size={28} />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg overflow-hidden lg:hidden">
+              <img src={mascot} alt="" className="h-full w-full object-cover" />
             </div>
           )}
           <h1 className="truncate font-display text-lg font-extrabold text-ink lg:text-xl">{title}</h1>

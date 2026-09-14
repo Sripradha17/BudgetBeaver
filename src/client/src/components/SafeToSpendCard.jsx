@@ -1,5 +1,6 @@
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { Blob, Coin, SparkleBurst } from "./illustrations.jsx";
+import mascot from "../assets/illustrations/mascot.jpg";
 
 export default function SafeToSpendCard({ amount, currency, changePct, className = "" }) {
   const hasChange = changePct !== null && Number.isFinite(changePct);
@@ -45,9 +46,9 @@ export default function SafeToSpendCard({ amount, currency, changePct, className
           <Coin className="absolute -right-1 bottom-2 h-6 w-6 drop-shadow-[0_6px_10px_rgba(0,0,0,0.25)] sm:h-7 sm:w-7" />
           <Coin className="absolute right-6 -top-1 h-5 w-5 drop-shadow-[0_6px_10px_rgba(0,0,0,0.25)]" />
           <img
-            src="/art/raccoon-smile.png"
+            src={mascot}
             alt="Budget Raccoon"
-            className="absolute inset-0 h-full w-full object-contain drop-shadow-[0_18px_22px_rgba(0,0,0,0.3)]"
+            className="absolute inset-2 h-[calc(100%-1rem)] w-[calc(100%-1rem)] rounded-full object-cover shadow-[0_18px_22px_rgba(0,0,0,0.3)]"
           />
         </div>
       </div>

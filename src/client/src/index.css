@@ -94,32 +94,6 @@ input[type="checkbox"] {
 }
 .animate-bob { animation: bob 2.8s ease-in-out infinite; }
 
-/* ---------- Mascot animation primitives ---------- */
-
-@keyframes raccoon-breathe {
-  0%, 100% { transform: scaleY(1); }
-  50% { transform: scaleY(1.015); }
-}
-.raccoon-breathe { animation: raccoon-breathe 3.4s ease-in-out infinite; transform-origin: 50% 100%; }
-
-@keyframes raccoon-tail-sway {
-  0%, 100% { transform: rotate(-4deg); }
-  50% { transform: rotate(7deg); }
-}
-.raccoon-tail { animation: raccoon-tail-sway 2.6s ease-in-out infinite; transform-origin: 85% 15%; }
-
-@keyframes raccoon-blink {
-  0%, 92%, 100% { transform: scaleY(1); }
-  95% { transform: scaleY(0.08); }
-}
-.raccoon-eye { animation: raccoon-blink 4.4s ease-in-out infinite; transform-origin: 50% 50%; }
-
-@keyframes raccoon-paw-bob {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-3px) rotate(-4deg); }
-}
-.raccoon-paw { animation: raccoon-paw-bob 2.2s ease-in-out infinite; transform-origin: top center; }
-
 @keyframes coin-bounce {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-7px) rotate(10deg); }
@@ -201,10 +175,6 @@ input[type="checkbox"] {
   .animate-slide-in,
   .animate-float-slow,
   .animate-bob,
-  .raccoon-breathe,
-  .raccoon-tail,
-  .raccoon-eye,
-  .raccoon-paw,
   .animate-coin-bounce,
   .animate-coin-drop,
   .animate-sparkle,

@@ -3,7 +3,9 @@ import { Plus, Trash2, Target, PiggyBank, PartyPopper } from "lucide-react";
 import { useData } from "../context/DataContext.jsx";
 import { fromInputDate } from "../lib/month.js";
 import Card from "../components/Card.jsx";
-import FinanceIllustration from "../components/illustrations/FinanceIllustration.jsx";
+import PhotoBanner from "../components/PhotoBanner.jsx";
+import PageHero from "../components/PageHero.jsx";
+import { illustrations, illustrationAspect, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 
 export default function GoalsPage() {
   const { expenses, categories, goals, settings, addGoal, updateGoal, removeGoal } = useData();
@@ -64,13 +66,25 @@ export default function GoalsPage() {
 
   return (
     <div className="space-y-5">
-      <FinanceIllustration type="goals" size={110} className="hidden sm:block" />
+      {/* This page gets the most emotional real estate — a full-frame hero
+          photo up top, an aspirational break lower down, and a real
+          celebration photo when a goal is met. Same hero language as every
+          other page: photo dissolves into the panel, no card, no border. */}
+      <PageHero
+        tint="teal"
+        eyebrow="Goals"
+        title="Turn saving into doing"
+        description="Set a target, track progress, and watch it add up."
+        image={illustrations.goals}
+        aspect={HERO_ASPECT}
+        edgeColor={illustrationEdgeColor.goals}
+      />
 
       <Card>
-        <h2 className="font-bold text-lg mb-3 flex items-center gap-1.5">
-          <PiggyBank size={18} className="text-coral" /> New savings goal
-        </h2>
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+          <h2 className="font-bold text-lg mb-3 flex items-center gap-1.5">
+            <PiggyBank size={18} className="text-coral" /> New savings goal
+          </h2>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-5 gap-3">
           <input
             type="text"
             placeholder="Goal name"
@@ -119,10 +133,7 @@ export default function GoalsPage() {
 
       {goals.length === 0 ? (
         <Card>
-          <div className="flex flex-col items-center gap-3 py-2 text-center">
-            <FinanceIllustration type="goals" size={110} className="w-full max-w-[220px]" />
-            <p className="text-ink/50 text-sm">No savings goals yet — add one above.</p>
-          </div>
+          <p className="text-ink/50 text-sm py-6 text-center">No savings goals yet — add one above.</p>
         </Card>
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">
@@ -132,7 +143,12 @@ export default function GoalsPage() {
           }) && (
             <Card className="sm:col-span-2 border-gold/40 bg-gold/[0.05]">
               <div className="flex items-center gap-4">
-                <FinanceIllustration type="goalReached" size={72} className="w-24 h-[72px] shrink-0" />
+                <PhotoBanner
+                  src={illustrations.goalReached}
+                  tint="gold"
+                  aspect={illustrationAspect.goalReached}
+                  className="h-24 shrink-0"
+                />
                 <div>
                   <h3 className="font-display font-bold text-ink">Nice work — a goal is fully funded!</h3>
                   <p className="text-sm text-ink/55 mt-0.5">Keep the momentum going on the rest below.</p>

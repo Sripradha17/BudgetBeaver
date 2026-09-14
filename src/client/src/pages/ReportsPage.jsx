@@ -5,7 +5,8 @@ import { useMonth } from "../context/MonthContext.jsx";
 import { buildMonthlyTrends } from "../lib/trends.js";
 import Card from "../components/Card.jsx";
 import CategoryBadge from "../components/CategoryBadge.jsx";
-import FinanceIllustration from "../components/illustrations/FinanceIllustration.jsx";
+import PageHero from "../components/PageHero.jsx";
+import { illustrations, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 import { IncomeExpenseTrendChart, SavingsInvestmentTrendChart } from "../components/TrendCharts.jsx";
 
 // Money moved into an Investment/Savings-flavored category isn't "spent" —
@@ -61,7 +62,15 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-5">
-      <FinanceIllustration type="reports" size={120} />
+      <PageHero
+        tint="plum"
+        eyebrow="Reports"
+        title="See the whole picture"
+        description="All-time trends across income, spending, and how much you've put toward savings and investments."
+        image={illustrations.reports}
+        aspect={HERO_ASPECT}
+        edgeColor={illustrationEdgeColor.reports}
+      />
 
       <div className="grid sm:grid-cols-3 gap-4">
         <Card className="text-center">
