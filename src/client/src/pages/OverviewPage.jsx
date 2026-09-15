@@ -14,6 +14,8 @@ import BudgetOverviewCard from "../components/BudgetOverviewCard.jsx";
 import RecentActivity from "../components/RecentActivity.jsx";
 import CategoryTile from "../components/CategoryTile.jsx";
 import MoneyFactCard from "../components/MoneyFactCard.jsx";
+import EmptyState from "../components/EmptyState.jsx";
+import { illustrations, illustrationAspect } from "../assets/illustrations/index.js";
 import { exportMonthToExcel } from "../lib/exportExcel.js";
 
 function greeting() {
@@ -240,9 +242,12 @@ export default function OverviewPage() {
       </h2>
       {byCategory.length === 0 ? (
         <Card id="overview-category-breakdown">
-          <p className="text-ink/50 text-sm py-6 text-center">
-            No expenses yet this month — log one to see your breakdown.
-          </p>
+          <EmptyState
+            image={illustrations.dashboard}
+            aspect={illustrationAspect.dashboard}
+            tint="forest"
+            message="No expenses yet this month — log one to see your breakdown."
+          />
         </Card>
       ) : (
         <div id="overview-category-breakdown" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">

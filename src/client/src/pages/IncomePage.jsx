@@ -6,9 +6,10 @@ import { monthKey, toInputDate, fromInputDate } from "../lib/month.js";
 import { useUndoDelete } from "../hooks/useUndoDelete.js";
 import Card from "../components/Card.jsx";
 import PageHero from "../components/PageHero.jsx";
-import { illustrations, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
+import { illustrations, illustrationAspect, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 import Pagination from "../components/Pagination.jsx";
 import UndoToast from "../components/UndoToast.jsx";
+import EmptyState from "../components/EmptyState.jsx";
 
 const PAGE_SIZE = 25;
 
@@ -167,7 +168,12 @@ export default function IncomePage() {
       <Card id="income-list">
         <h2 className="font-bold text-lg mb-3">This month's income</h2>
         {monthIncome.length === 0 ? (
-          <p className="text-ink/50 text-sm py-6 text-center">No income logged yet.</p>
+          <EmptyState
+            image={illustrations.income}
+            aspect={illustrationAspect.income}
+            tint="teal"
+            message="No income logged yet — add your first entry above."
+          />
         ) : (
           <ul className="rounded-xl border border-mist/70 divide-y divide-mist overflow-hidden">
             {pageIncome.map((i) => (

@@ -10,7 +10,10 @@
     "dev:client": "npm --prefix src/client run dev",
     "build:client": "npm --prefix src/client run build",
     "start": "node src/server/index.js",
-    "install:client": "npm --prefix src/client install"
+    "install:client": "npm --prefix src/client install",
+    "test:server": "vitest run --root src/server",
+    "test:client": "npm --prefix src/client run test",
+    "test": "npm run test:server && npm run test:client"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -22,6 +25,7 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "concurrently": "^9.1.0",
+    "vitest": "^2.1.8"
   }
 }

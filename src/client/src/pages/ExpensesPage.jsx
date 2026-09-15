@@ -24,7 +24,7 @@ import { getMissingRecurringForMonth } from "../lib/recurring.js";
 import { useUndoDelete } from "../hooks/useUndoDelete.js";
 import { fetchExchangeRate, CURRENCIES } from "../lib/currency.js";
 import Card from "../components/Card.jsx";
-import PhotoBanner from "../components/PhotoBanner.jsx";
+import EmptyState from "../components/EmptyState.jsx";
 import PageHero from "../components/PageHero.jsx";
 import { illustrations, illustrationAspect, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 import CategoryChipPicker from "../components/CategoryChipPicker.jsx";
@@ -503,15 +503,12 @@ export default function ExpensesPage() {
         )}
 
         {monthExpenses.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 py-4 text-center">
-            <PhotoBanner
-              src={illustrations.expensesEmpty}
-              tint="coral"
-              aspect={illustrationAspect.expensesEmpty}
-              className="w-full max-w-[500px]"
-            />
-            <p className="text-ink/50 text-sm">No expenses logged yet — add one above to get started.</p>
-          </div>
+          <EmptyState
+            image={illustrations.expensesEmpty}
+            aspect={illustrationAspect.expensesEmpty}
+            tint="coral"
+            message="No expenses logged yet — add one above to get started."
+          />
         ) : visibleExpenses.length === 0 ? (
           <p className="text-ink/50 text-sm py-6 text-center">No expenses match your search/filters.</p>
         ) : dayGroups ? (

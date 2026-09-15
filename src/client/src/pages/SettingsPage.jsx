@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Trash2, AlertTriangle, LogOut, Bell, BellOff, Download, Mail } from "lucide-react";
+import { Plus, Trash2, AlertTriangle, LogOut, Bell, BellOff, Download, Mail, Users, Copy, Check, RefreshCw } from "lucide-react";
 import { useData } from "../context/DataContext.jsx";
 import { colorForNewCategory } from "../lib/categories.js";
-import { clearToken, getCurrentUserEmail } from "../lib/api.js";
+import { api, clearToken, getCurrentUserEmail } from "../lib/api.js";
 import { enableBillReminders, disableBillReminders, getBillReminderStatus } from "../lib/push.js";
 import { CURRENCIES } from "../lib/currency.js";
 import { exportExpensesCsv, exportIncomeCsv } from "../lib/exportData.js";
@@ -42,10 +42,40 @@ export default function SettingsPage({ onLogout }) {
   const [pushStatus, setPushStatus] = useState("checking");
   const [pushError, setPushError] = useState(null);
   const [pushBusy, setPushBusy] = useState(false);
+  const [household, setHousehold] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
+  const [confirmRegenerate, setConfirmRegenerate] = useState(false);
 
   useEffect(() => {
     getBillReminderStatus().then(setPushStatus);
   }, []);
+
+  useEffect(() => {
+    api.getHousehold().then(setHousehold).catch(() => {});
+  }, []);
+
+  async function handleCopyInvite() {
+    if (!household) return;
+    try {
+      await navigator.clipboard.writeText(household.inviteCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard access can be denied — the code is still visible on screen to copy by hand.
+    }
+  }
+
+  async function handleRegenerateInvite() {
+    setRegenerating(true);
+    try {
+      const { inviteCode } = await api.regenerateInvite();
+      setHousehold((h) => ({ ...h, inviteCode }));
+      setConfirmRegenerate(false);
+    } finally {
+      setRegenerating(false);
+    }
+  }
 
   async function handleTogglePush() {
     setPushBusy(true);
@@ -123,6 +153,68 @@ export default function SettingsPage({ onLogout }) {
             Data you add here is only ever visible to your household — no one else can see or
             edit it.
           </p>
+        </Card>
+      )}
+
+      {household && (
+        <Card id="settings-household">
+          <h2 className="font-bold text-lg mb-1 flex items-center gap-1.5">
+            <Users size={17} className="text-[var(--accent-text)]" /> Household
+          </h2>
+          <p className="text-xs text-ink/50 mb-3">
+            Share this invite code with your partner so their account joins your household
+            instead of starting a separate, empty one.
+          </p>
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="rounded-lg bg-mist/50 px-4 py-2 text-sm font-mono font-semibold tracking-[0.2em]">
+              {household.inviteCode}
+            </span>
+            <button
+              onClick={handleCopyInvite}
+              className="flex items-center gap-1.5 rounded-lg border border-mist text-sm font-medium px-3 py-2 hover:bg-mist/40"
+            >
+              {copied ? <Check size={14} /> : <Copy size={14} />}
+              {copied ? "Copied" : "Copy"}
+            </button>
+            {!confirmRegenerate ? (
+              <button
+                onClick={() => setConfirmRegenerate(true)}
+                className="flex items-center gap-1.5 text-sm font-medium text-ink/50 hover:text-ink px-2 py-2"
+              >
+                <RefreshCw size={14} /> New code
+              </button>
+            ) : (
+              <span className="flex items-center gap-2 text-sm">
+                <span className="text-ink/60">Old code stops working. Sure?</span>
+                <button
+                  onClick={handleRegenerateInvite}
+                  disabled={regenerating}
+                  className="rounded-lg bg-[var(--accent)] text-white text-sm font-medium px-3 py-1.5 hover:bg-[var(--accent-hover)] disabled:opacity-50"
+                >
+                  {regenerating ? "Please wait…" : "Yes, regenerate"}
+                </button>
+                <button
+                  onClick={() => setConfirmRegenerate(false)}
+                  className="rounded-lg border border-mist text-sm font-medium px-3 py-1.5"
+                >
+                  Cancel
+                </button>
+              </span>
+            )}
+          </div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink/40 mb-2">
+            Members ({household.members.length})
+          </p>
+          <ul className="divide-y divide-mist rounded-lg border border-mist/70 overflow-hidden">
+            {household.members.map((m) => (
+              <li key={m._id} className="flex items-center justify-between px-3 py-2 text-sm">
+                <span className="truncate">{m.email}</span>
+                <span className="text-xs text-ink/40 shrink-0 ml-2">
+                  Joined {new Date(m.createdAt).toLocaleDateString(undefined, { month: "short", year: "numeric" })}
+                </span>
+              </li>
+            ))}
+          </ul>
         </Card>
       )}
 

@@ -3,6 +3,7 @@ import { useData } from "../../context/DataContext.jsx";
 import Sidebar from "./Sidebar.jsx";
 import TopBar from "./TopBar.jsx";
 import MobileBottomNav from "./MobileBottomNav.jsx";
+import PageSkeleton from "../Skeleton.jsx";
 import { pageTheme, routeTheme, themeVars } from "../../theme/pageTheme.js";
 
 export default function AppShell({ onLogout }) {
@@ -30,7 +31,7 @@ export default function AppShell({ onLogout }) {
               </div>
             )}
             {loading ? (
-              <p className="text-center text-ink/50 py-10">Loading your finances…</p>
+              <PageSkeleton />
             ) : (
               <div id="app-page-content" key={location.pathname} className="animate-page-in">
                 <Outlet />

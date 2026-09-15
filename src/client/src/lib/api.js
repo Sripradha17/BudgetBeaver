@@ -56,15 +56,15 @@ async function request(path, options = {}) {
   return res.json();
 }
 
-async function authRequest(path, email, password) {
+async function authRequest(path, body) {
   const res = await fetch(`${BASE}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify(body),
   });
   if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `Request failed: ${res.status}`);
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody.error || `Request failed: ${res.status}`);
   }
   const { token } = await res.json();
   setToken(token);
@@ -72,8 +72,11 @@ async function authRequest(path, email, password) {
 }
 
 export const api = {
-  login: (email, password) => authRequest("/login", email, password),
-  signup: (email, password) => authRequest("/signup", email, password),
+  login: (email, password) => authRequest("/login", { email, password }),
+  signup: (email, password, inviteCode) => authRequest("/signup", { email, password, inviteCode }),
+
+  getHousehold: () => request("/household"),
+  regenerateInvite: () => request("/household/regenerate-invite", { method: "POST" }),
 
   getExpenses: () => request("/expenses"),
   createExpense: (data) => request("/expenses", { method: "POST", body: JSON.stringify(data) }),

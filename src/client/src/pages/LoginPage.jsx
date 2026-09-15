@@ -11,6 +11,7 @@ export default function LoginPage({ onLoggedIn }) {
   const theme = mode === "login" ? pageTheme.loginSignIn : pageTheme.loginSignUp;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -22,7 +23,7 @@ export default function LoginPage({ onLoggedIn }) {
       if (mode === "login") {
         await api.login(email, password);
       } else {
-        await api.signup(email, password);
+        await api.signup(email, password, inviteCode);
       }
       onLoggedIn();
     } catch (err) {
@@ -168,10 +169,27 @@ export default function LoginPage({ onLoggedIn }) {
             />
           </div>
           {mode === "signup" && (
-            <p className="mt-2.5 text-xs leading-4 text-ink/55 sm:leading-5">
-              This creates a brand-new, empty household — your own private space, separate from
-              anyone else's data.
-            </p>
+            <>
+              <div className="mt-3">
+                <label className="mb-1.5 block text-[13px] font-bold text-ink/70 sm:text-sm">
+                  Household invite code (optional)
+                </label>
+                <input
+                  id="login-invite-code-input"
+                  type="text"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                  className="w-full rounded-2xl border border-white/80 px-4 py-2.5 text-[13px] uppercase tracking-widest focus:outline-[var(--accent-ring)] sm:text-sm sm:py-2.5"
+                  placeholder="e.g. 7GQKX3MP"
+                  maxLength={8}
+                />
+              </div>
+              <p className="mt-2.5 text-xs leading-4 text-ink/55 sm:leading-5">
+                {inviteCode
+                  ? "You'll join that household and share its data — find the code on their Settings page."
+                  : "Leave this blank to create a brand-new, empty household — your own private space, separate from anyone else's data."}
+              </p>
+            </>
           )}
           {error && <p className="mt-3 text-[13px] text-red-500 sm:text-sm">{error}</p>}
           <button

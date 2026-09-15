@@ -5,6 +5,7 @@ import { fromInputDate } from "../lib/month.js";
 import Card from "../components/Card.jsx";
 import PhotoBanner from "../components/PhotoBanner.jsx";
 import PageHero from "../components/PageHero.jsx";
+import EmptyState from "../components/EmptyState.jsx";
 import { illustrations, illustrationAspect, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 
 export default function GoalsPage() {
@@ -134,7 +135,12 @@ export default function GoalsPage() {
 
       {goals.length === 0 ? (
         <Card id="goals-list">
-          <p className="text-ink/50 text-sm py-6 text-center">No savings goals yet — add one above.</p>
+          <EmptyState
+            image={illustrations.goalsAdventure}
+            aspect={illustrationAspect.goalsAdventure}
+            tint="plum"
+            message="No savings goals yet — add one above to start tracking."
+          />
         </Card>
       ) : (
         <div id="goals-list" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
