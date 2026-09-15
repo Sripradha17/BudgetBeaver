@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { PiggyBank } from "lucide-react";
 import { api } from "../lib/api.js";
 import aboutIntroGif from "../assets/illustrations/about_page.gif";
 import { pageTheme, themeVars } from "../theme/pageTheme.js";
@@ -95,7 +96,9 @@ export default function LoginPage({ onLoggedIn }) {
                   : "Set up your own household in under a minute."}
               </p>
             </div>
-            <div className="h-12 w-12 rounded-[1rem] bg-[linear-gradient(135deg,var(--accent),var(--accent-hover))] shadow-[0_18px_28px_-22px_rgba(0,0,0,0.8)] sm:h-14 sm:w-14" />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,var(--accent),var(--accent-hover))] shadow-[0_18px_28px_-22px_rgba(0,0,0,0.8)] sm:h-14 sm:w-14">
+              <PiggyBank size={24} className="text-white" strokeWidth={2.2} />
+            </div>
           </div>
 
           <div className="mb-4 grid grid-cols-2 gap-2.5 rounded-[1.35rem] bg-white/72 p-2.5 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] sm:gap-3 sm:p-3">
