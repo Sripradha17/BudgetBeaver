@@ -1,12 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
-  LayoutDashboard,
-  Receipt,
-  Wallet,
-  Target,
-  Flag,
-  BarChart3,
   ArrowUpRight,
   ArrowDownRight,
   Plus,
@@ -30,15 +24,6 @@ import PageHero from "../components/PageHero.jsx";
 import RecentActivity from "../components/RecentActivity.jsx";
 import { illustrations, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 import { pageTheme } from "../theme/pageTheme.js";
-
-const QUICK_LINKS = [
-  { to: "/overview", label: "Overview", icon: LayoutDashboard },
-  { to: "/expenses", label: "Expenses", icon: Receipt },
-  { to: "/income", label: "Income", icon: Wallet },
-  { to: "/budget", label: "Budget", icon: Target },
-  { to: "/goals", label: "Goals", icon: Flag },
-  { to: "/reports", label: "Reports", icon: BarChart3 },
-];
 
 function greeting() {
   const hour = new Date().getHours();
@@ -240,26 +225,6 @@ export default function HomePage() {
         </Card>
 
         <RecentActivity id="home-recent-activity" items={recentActivity} currency={settings.currency} />
-      </div>
-
-      {/* Compact secondary nav row — varies the page rhythm instead of another card grid.
-          Sidebar already gives full nav access on laptop+ widths, so this is mobile/tablet-only. */}
-      <div id="home-jump-to" className="lg:hidden">
-        <h2 className="mb-3 font-display text-base font-bold text-[var(--shell-text)]">Jump to</h2>
-        <div className="scroll-fade-x flex gap-2.5 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-6">
-          {QUICK_LINKS.map(({ to, label, icon: Icon }) => (
-            <Link
-              key={to}
-              id={`home-jump-to-${to.replace("/", "")}`}
-              to={to}
-              className="flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold text-ink/70 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_30%,transparent)] hover:bg-[var(--tile-bg)] hover:text-[var(--accent-text)] sm:shrink sm:justify-center"
-              style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
-            >
-              <Icon size={15} className="text-ink/40" />
-              {label}
-            </Link>
-          ))}
-        </div>
       </div>
     </div>
   );

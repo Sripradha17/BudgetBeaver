@@ -58,7 +58,7 @@ export default function LoginPage({ onLoggedIn }) {
           </div>
           <div className="max-w-xl space-y-2.5">
             <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-ink/45 sm:text-[11px]">Overview</p>
-            <h1 className="max-w-[11ch] text-[1.6rem] leading-[0.96] text-ink sm:text-[1.9rem] md:text-[2.15rem] lg:text-[2.75rem]">
+            <h1 className="mx-auto text-[1.6rem] leading-[0.96] text-ink sm:max-w-[11ch] sm:text-[1.9rem] md:mx-0 md:text-[2.15rem] lg:text-[2.75rem]">
               Clear budgeting, softer interface.
             </h1>
             <p className="mx-auto max-w-md text-[12px] leading-5 text-ink/68 sm:text-[13px] md:mx-0 md:max-w-[34rem] md:text-sm lg:text-[15px] lg:leading-6">
