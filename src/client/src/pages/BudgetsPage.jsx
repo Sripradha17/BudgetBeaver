@@ -90,8 +90,9 @@ export default function BudgetsPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div id="budget-page" className="space-y-4">
       <PageHero
+        id="budget-hero"
         tint="gold"
         eyebrow="Budget"
         title="Plan with intention"
@@ -101,6 +102,7 @@ export default function BudgetsPage() {
         edgeColor={illustrationEdgeColor.budget}
       >
         <button
+          id="budget-export-button"
           onClick={handleExport}
           className="flex w-fit items-center gap-1.5 rounded-full bg-white text-[var(--accent-text)] text-sm font-bold px-4 py-2.5 hover:bg-white/90"
         >
@@ -108,7 +110,7 @@ export default function BudgetsPage() {
         </button>
       </PageHero>
 
-      <Card>
+      <Card id="budget-edit-form">
         <h3 className="font-semibold text-sm mb-3">Edit a budget</h3>
         <div className="flex flex-wrap items-end gap-3">
           <label className="text-xs text-ink/60 flex-1 min-w-[160px]">
@@ -169,6 +171,7 @@ export default function BudgetsPage() {
       </Card>
 
       <div
+        id="budget-category-list"
         className="rounded-[1.75rem] shadow-soft border overflow-hidden"
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >

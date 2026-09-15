@@ -141,8 +141,9 @@ export default function HomePage() {
   const fmt = (n) => `${settings.currency}${Math.abs(n).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
   return (
-    <div className="space-y-6">
+    <div id="home-page" className="space-y-6">
       <PageHero
+        id="home-hero"
         tint="forest"
         eyebrow="Dashboard"
         title={`${greeting()}, ${settings.myLabel}`}
@@ -189,7 +190,7 @@ export default function HomePage() {
       </PageHero>
 
       {/* Stat tiles: balance, income, expenses, goal progress ring */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+      <div id="home-stat-tiles" className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         <div className="rounded-[1.6rem] border p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]" style={{ backgroundColor: "var(--tile-bg)", borderColor: "var(--tile-border)" }}>
           <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-ink/50">Total balance</p>
           <p className="mt-2 font-display text-lg font-extrabold tabular-nums sm:text-2xl" style={{ color: "var(--accent-text)" }}>
@@ -217,8 +218,8 @@ export default function HomePage() {
       </div>
 
       {/* Asymmetric second row: spending chart (wider) + recent activity (narrower) */}
-      <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <Card>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <Card id="home-spending-chart">
           <div className="mb-1 flex items-center justify-between">
             <h3 className="flex items-center gap-1.5 font-bold text-sm">
               <TrendingDown size={15} className="text-[var(--accent-text)]" /> Spending overview
@@ -238,17 +239,18 @@ export default function HomePage() {
           </ResponsiveContainer>
         </Card>
 
-        <RecentActivity items={recentActivity} currency={settings.currency} />
+        <RecentActivity id="home-recent-activity" items={recentActivity} currency={settings.currency} />
       </div>
 
       {/* Compact secondary nav row — varies the page rhythm instead of another card grid.
           Sidebar already gives full nav access on laptop+ widths, so this is mobile/tablet-only. */}
-      <div className="lg:hidden">
+      <div id="home-jump-to" className="lg:hidden">
         <h2 className="mb-3 font-display text-base font-bold text-[var(--shell-text)]">Jump to</h2>
         <div className="scroll-fade-x flex gap-2.5 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-6">
           {QUICK_LINKS.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}
+              id={`home-jump-to-${to.replace("/", "")}`}
               to={to}
               className="flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold text-ink/70 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_30%,transparent)] hover:bg-[var(--tile-bg)] hover:text-[var(--accent-text)] sm:shrink sm:justify-center"
               style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}

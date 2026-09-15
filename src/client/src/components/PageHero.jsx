@@ -20,6 +20,7 @@ const FADE_TOP = "linear-gradient(to top, black 45%, transparent 100%)";
 const FADE_LEFT = "linear-gradient(to right, transparent 0%, black 48%)";
 
 export default function PageHero({
+  id,
   tint = "forest",
   eyebrow,
   title,
@@ -42,6 +43,7 @@ export default function PageHero({
 
   return (
     <div
+      id={id}
       className={`relative overflow-hidden rounded-[2rem] text-cream shadow-soft lg:h-[var(--hero-h)] ${className}`}
       style={{ "--hero-h": `${heroHeight}px` }}
     >

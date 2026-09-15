@@ -16,6 +16,7 @@ export default function TopBar() {
 
   return (
     <header
+      id="app-topbar"
       className="sticky top-0 z-20 border-b border-[color-mix(in_srgb,var(--shell-text)_15%,transparent)] backdrop-blur transition-colors duration-300"
       style={{ backgroundColor: "color-mix(in srgb, var(--page-wash) 92%, transparent)" }}
     >
@@ -26,7 +27,7 @@ export default function TopBar() {
               <img src={mascot} alt="" className="h-full w-full object-cover" />
             </div>
           )}
-          <h1 className="truncate font-display text-lg font-extrabold text-[var(--shell-text)] lg:text-xl">{title}</h1>
+          <h1 id="app-topbar-title" className="truncate font-display text-lg font-extrabold text-[var(--shell-text)] lg:text-xl">{title}</h1>
         </div>
         {showMonth && <MonthNavigator />}
       </div>

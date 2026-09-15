@@ -2,12 +2,13 @@ import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { Blob, Coin, SparkleBurst } from "./illustrations.jsx";
 import mascot from "../assets/illustrations/mascot.jpg";
 
-export default function SafeToSpendCard({ amount, currency, changePct, className = "" }) {
+export default function SafeToSpendCard({ id, amount, currency, changePct, className = "" }) {
   const hasChange = changePct !== null && Number.isFinite(changePct);
   const isUp = hasChange && changePct >= 0;
 
   return (
     <div
+      id={id}
       className={`relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#1a5c4c_0%,#227a63_48%,#2f9179_100%)] p-5 sm:p-7 shadow-soft text-cream ${className}`}
     >
       <Blob className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 text-white/10" />

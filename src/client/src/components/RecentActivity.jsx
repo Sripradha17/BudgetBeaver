@@ -1,11 +1,11 @@
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import Card from "./Card.jsx";
 
-export default function RecentActivity({ items, currency, className = "" }) {
+export default function RecentActivity({ id, items, currency, className = "" }) {
   const fmt = (n) => `${currency}${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 
   return (
-    <Card className={className}>
+    <Card id={id} className={className}>
       <h3 className="font-bold text-sm mb-3">Recent activity</h3>
       {items.length === 0 ? (
         <p className="text-ink/50 text-sm py-4 text-center">Nothing logged yet this month.</p>

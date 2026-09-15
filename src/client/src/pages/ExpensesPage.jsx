@@ -253,8 +253,9 @@ export default function ExpensesPage() {
   const fmt = (n) => `${settings.currency}${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 
   return (
-    <div className="space-y-5">
+    <div id="expenses-page" className="space-y-5">
       <PageHero
+        id="expenses-hero"
         tint="coral"
         eyebrow="Expenses"
         title="Track every dollar"
@@ -264,7 +265,7 @@ export default function ExpensesPage() {
         edgeColor={illustrationEdgeColor.expenses}
       />
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div id="expenses-stat-tiles" className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <StatTile label="Income" value={fmt(totals.income)} icon={TrendingUp} tone="accent" />
         <StatTile label="Expenses" value={fmt(totals.expenses)} icon={TrendingDown} tone="accent" />
         <StatTile
@@ -276,7 +277,7 @@ export default function ExpensesPage() {
         />
       </div>
 
-      <Card>
+      <Card id="expenses-add-form">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
           <div>
             <h2 className="font-bold text-lg flex items-center gap-1.5">
@@ -303,7 +304,7 @@ export default function ExpensesPage() {
           </div>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid sm:grid-cols-[1.3fr_1fr] gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-[1.3fr_1fr] gap-3">
             <label className="block">
               <span className="mb-1.5 block text-[11px] font-extrabold uppercase tracking-[0.16em] text-ink/45">
                 Amount
@@ -347,7 +348,7 @@ export default function ExpensesPage() {
             />
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label className="block">
               <span className="mb-1.5 block text-[11px] font-extrabold uppercase tracking-[0.16em] text-ink/45">
                 Note
@@ -419,7 +420,7 @@ export default function ExpensesPage() {
       </Card>
 
       {missingRecurring.length > 0 && (
-        <Card className="border-[color-mix(in_srgb,var(--accent)_40%,transparent)]" style={{ backgroundColor: "var(--tile-bg)" }}>
+        <Card id="expenses-missing-recurring" className="border-[color-mix(in_srgb,var(--accent)_40%,transparent)]" style={{ backgroundColor: "var(--tile-bg)" }}>
           <div className="flex items-start gap-3">
             <Repeat size={18} className="text-[var(--accent-text)] shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
@@ -450,7 +451,7 @@ export default function ExpensesPage() {
         </Card>
       )}
 
-      <Card>
+      <Card id="expenses-list">
         <h2 className="font-bold text-lg mb-3">This month's expenses</h2>
 
         {monthExpenses.length > 0 && (

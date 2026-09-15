@@ -99,8 +99,9 @@ export default function SettingsPage({ onLogout }) {
   }
 
   return (
-    <div className="space-y-5">
+    <div id="settings-page" className="space-y-5">
       <PageHero
+        id="settings-hero"
         tint="teal"
         eyebrow="Settings"
         title="Small changes, big control"
@@ -111,7 +112,7 @@ export default function SettingsPage({ onLogout }) {
       />
 
       {userEmail && (
-        <Card>
+        <Card id="settings-account">
           <h2 className="font-bold text-lg mb-2 flex items-center gap-1.5">
             <Mail size={17} className="text-[var(--accent-text)]" /> Account
           </h2>
@@ -125,9 +126,9 @@ export default function SettingsPage({ onLogout }) {
         </Card>
       )}
 
-      <Card>
+      <Card id="settings-general">
         <h2 className="font-bold text-lg mb-3">General</h2>
-        <form onSubmit={handleSaveGeneral} className="grid sm:grid-cols-4 gap-3">
+        <form onSubmit={handleSaveGeneral} className="grid grid-cols-1 sm:grid-cols-4 gap-3">
           <label className="text-sm">
             Currency symbol
             <input
@@ -180,7 +181,7 @@ export default function SettingsPage({ onLogout }) {
         </form>
       </Card>
 
-      <Card>
+      <Card id="settings-categories">
         <h2 className="font-bold text-lg mb-3">Categories</h2>
         <div className="flex flex-wrap gap-2 mb-4">
           {categories.map((c, idx) => (
@@ -226,7 +227,7 @@ export default function SettingsPage({ onLogout }) {
         </form>
       </Card>
 
-      <Card>
+      <Card id="settings-bill-reminders">
         <h2 className="font-bold text-lg mb-1 flex items-center gap-1.5">
           {pushStatus === "enabled" ? <Bell size={17} className="text-[var(--accent-text)]" /> : <BellOff size={17} />}
           Bill reminders
@@ -262,7 +263,7 @@ export default function SettingsPage({ onLogout }) {
         {pushError && <p className="text-xs text-red-400 mt-2">{pushError}</p>}
       </Card>
 
-      <Card>
+      <Card id="settings-export">
         <h2 className="font-bold text-lg mb-1 flex items-center gap-1.5">
           <Download size={17} className="text-[var(--accent-text)]" /> Export your data
         </h2>
@@ -287,7 +288,7 @@ export default function SettingsPage({ onLogout }) {
         </div>
       </Card>
 
-      <Card>
+      <Card id="settings-logout">
         <button
           onClick={() => {
             clearToken();
@@ -299,7 +300,7 @@ export default function SettingsPage({ onLogout }) {
         </button>
       </Card>
 
-      <Card className="border border-red-500/30">
+      <Card id="settings-danger-zone" className="border border-red-500/30">
         <h2 className="font-bold text-lg mb-2 text-red-400 flex items-center gap-2">
           <AlertTriangle size={18} /> Danger zone
         </h2>

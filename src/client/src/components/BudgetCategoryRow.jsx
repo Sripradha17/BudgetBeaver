@@ -67,12 +67,16 @@ export default function BudgetCategoryRow({
           <div className="mt-1.5 h-2 rounded-full bg-mist overflow-hidden">
             <div className="h-full transition-all" style={{ width: `${Math.min(100, Math.max(0, pct))}%`, backgroundColor: barColor }} />
           </div>
-          <div className="flex items-center justify-between mt-1 text-xs text-ink/60">
+          <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 mt-1 text-xs text-ink/60">
             <span>
               Spent {currency}
               {spent.toLocaleString()}
             </span>
-            <span className={overBudget ? "font-medium" : ""} style={overBudget ? { color: shadeCss(3) } : undefined}>{statusText}</span>
+            {statusText && (
+              <span className={overBudget ? "font-medium" : ""} style={overBudget ? { color: shadeCss(3) } : undefined}>
+                {statusText}
+              </span>
+            )}
           </div>
         </div>
       </div>

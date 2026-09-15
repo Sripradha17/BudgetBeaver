@@ -86,8 +86,9 @@ export default function IncomePage() {
   const fmt = (n) => `${settings.currency}${n.toLocaleString()}`;
 
   return (
-    <div className="space-y-5">
+    <div id="income-page" className="space-y-5">
       <PageHero
+        id="income-hero"
         tint="teal"
         eyebrow="Income"
         title="Every dollar in"
@@ -97,17 +98,17 @@ export default function IncomePage() {
         edgeColor={illustrationEdgeColor.income}
       />
 
-      <div className="grid grid-cols-3 gap-3">
+      <div id="income-stat-tiles" className="grid grid-cols-3 gap-3">
         <IncomeStatCard label={settings.myLabel} value={fmt(totals.mine)} icon={Wallet} />
         <IncomeStatCard label={settings.spouseLabel} value={fmt(totals.spouse)} icon={Wallet} />
         <IncomeStatCard label="Combined" value={fmt(totals.combined)} icon={Users} />
       </div>
 
-      <Card>
+      <Card id="income-add-form">
         <h2 className="font-bold text-lg mb-3 flex items-center gap-1.5">
           <PiggyBank size={18} className="text-[var(--accent-text)]" /> Log income
         </h2>
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
           <input
             type="date"
             value={form.date}
@@ -154,6 +155,7 @@ export default function IncomePage() {
           break rather than another data card. Both hero photos share the
           page's one teal accent/background now, same as every other page. */}
       <PageHero
+        id="income-wellness-hero"
         tint="forest"
         title="A healthier you, a brighter tomorrow"
         description="Every source of income you log here is one step closer to your goals."
@@ -162,7 +164,7 @@ export default function IncomePage() {
         edgeColor={illustrationEdgeColor.wellness}
       />
 
-      <Card>
+      <Card id="income-list">
         <h2 className="font-bold text-lg mb-3">This month's income</h2>
         {monthIncome.length === 0 ? (
           <p className="text-ink/50 text-sm py-6 text-center">No income logged yet.</p>

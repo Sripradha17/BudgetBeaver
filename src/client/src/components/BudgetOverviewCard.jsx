@@ -3,13 +3,13 @@ import Card from "./Card.jsx";
 import { categoryIndex } from "../lib/categories.js";
 import { shadeCss } from "../lib/shades.js";
 
-export default function BudgetOverviewCard({ rows, allCategories, totalBudget, totalSpent, currency, className = "" }) {
+export default function BudgetOverviewCard({ id, rows, allCategories, totalBudget, totalSpent, currency, className = "" }) {
   const overallPct = totalBudget > 0 ? Math.min(100, (totalSpent / totalBudget) * 100) : 0;
   const fmt = (n) => `${currency}${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
   const overallColor = overallPct >= 100 ? shadeCss(3) : overallPct >= 80 ? shadeCss(2) : shadeCss(4);
 
   return (
-    <Card className={className}>
+    <Card id={id} className={className}>
       <div className="flex items-center justify-between mb-1">
         <h3 className="font-bold text-sm flex items-center gap-1.5">
           <Target size={15} className="text-[var(--accent-text)]" /> Monthly budget

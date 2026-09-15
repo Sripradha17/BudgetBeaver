@@ -11,11 +11,12 @@ export default function AppShell({ onLogout }) {
   const theme = pageTheme[routeTheme[location.pathname]] || pageTheme.dashboard;
 
   return (
-    <div className="min-h-screen transition-colors duration-300" style={themeVars(theme)}>
+    <div id="app-shell" className="min-h-screen transition-colors duration-300" style={themeVars(theme)}>
       <Sidebar onLogout={onLogout} />
       <div className="flex min-h-screen flex-col lg:pl-[var(--nav-sidebar-w)]">
         <TopBar />
         <main
+          id="app-main"
           className="flex-1 w-full px-4 py-5 pb-[calc(var(--bottom-nav-h)+1rem)] transition-[background] duration-300 sm:px-6 lg:px-8 lg:pb-8"
           style={{
             background:
@@ -24,14 +25,14 @@ export default function AppShell({ onLogout }) {
         >
           <div className="mx-auto max-w-content">
             {error && (
-              <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2 text-sm">
+              <div id="app-error-banner" className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2 text-sm">
                 {error}
               </div>
             )}
             {loading ? (
               <p className="text-center text-ink/50 py-10">Loading your finances…</p>
             ) : (
-              <div key={location.pathname} className="animate-page-in">
+              <div id="app-page-content" key={location.pathname} className="animate-page-in">
                 <Outlet />
               </div>
             )}

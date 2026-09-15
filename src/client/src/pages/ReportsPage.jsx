@@ -63,8 +63,9 @@ export default function ReportsPage() {
   const fmt = (n) => `${settings.currency}${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 
   return (
-    <div className="space-y-5">
+    <div id="reports-page" className="space-y-5">
       <PageHero
+        id="reports-hero"
         tint="coral"
         eyebrow="Reports"
         title="See the whole picture"
@@ -74,8 +75,8 @@ export default function ReportsPage() {
         edgeColor={illustrationEdgeColor.reports}
       />
 
-      <div className="grid sm:grid-cols-3 gap-4">
-        <Card className="text-center">
+      <div id="reports-stat-tiles" className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card id="reports-net-worth" className="text-center">
           <p className="text-xs text-ink/50 uppercase">Net worth</p>
           <p
             className="font-display font-bold text-3xl"
@@ -86,13 +87,13 @@ export default function ReportsPage() {
           </p>
           <p className="text-xs text-ink/40 mt-1.5">Earned minus everyday spending, all time</p>
         </Card>
-        <Card>
+        <Card id="reports-total-income">
           <p className="text-xs text-ink/50 uppercase mb-1">Total income, all time</p>
           <p className="font-display font-bold text-xl text-[var(--accent-text)] flex items-center gap-1.5">
             <TrendingUp size={18} /> {fmt(totals.totalIncome)}
           </p>
         </Card>
-        <Card>
+        <Card id="reports-savings-rate">
           <p className="text-xs text-ink/50 uppercase mb-1">Savings rate</p>
           <p className="font-display font-bold text-xl text-[var(--accent-text)] flex items-center gap-1.5">
             <PiggyBank size={18} /> {savingsRate.toFixed(0)}%
@@ -101,12 +102,12 @@ export default function ReportsPage() {
         </Card>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div id="reports-charts" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <IncomeExpenseTrendChart data={trendData} currency={settings.currency} />
         <SavingsInvestmentTrendChart data={trendData} currency={settings.currency} />
       </div>
 
-      <Card>
+      <Card id="reports-invested-saved">
         <h2 className="font-bold text-lg mb-3 flex items-center gap-1.5">
           <Sparkles size={17} className="text-[var(--accent-text)]" /> Invested & saved
         </h2>

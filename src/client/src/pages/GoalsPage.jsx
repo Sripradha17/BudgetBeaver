@@ -65,12 +65,13 @@ export default function GoalsPage() {
   const fmt = (n) => `${settings.currency}${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 
   return (
-    <div className="space-y-5">
+    <div id="goals-page" className="space-y-5">
       {/* This page gets the most emotional real estate — a full-frame hero
           photo up top, an aspirational break lower down, and a real
           celebration photo when a goal is met. Same hero language as every
           other page: photo dissolves into the panel, no card, no border. */}
       <PageHero
+        id="goals-hero"
         tint="plum"
         eyebrow="Goals"
         title="Turn saving into doing"
@@ -80,11 +81,11 @@ export default function GoalsPage() {
         edgeColor={illustrationEdgeColor.goals}
       />
 
-      <Card>
+      <Card id="goals-add-form">
           <h2 className="font-bold text-lg mb-3 flex items-center gap-1.5">
             <PiggyBank size={18} className="text-[var(--accent-text)]" /> New savings goal
           </h2>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
           <input
             type="text"
             placeholder="Goal name"
@@ -124,7 +125,7 @@ export default function GoalsPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="sm:col-span-5 flex items-center justify-center gap-1.5 rounded-lg bg-[var(--accent)] text-white font-medium px-3 py-2 text-sm hover:bg-[var(--accent-hover)] disabled:opacity-50 sm:w-auto sm:justify-self-start sm:px-6"
+            className="sm:col-span-2 xl:col-span-5 flex items-center justify-center gap-1.5 rounded-lg bg-[var(--accent)] text-white font-medium px-3 py-2 text-sm hover:bg-[var(--accent-hover)] disabled:opacity-50 sm:w-auto sm:justify-self-start sm:px-6"
           >
             <Plus size={16} /> Add goal
           </button>
@@ -132,11 +133,11 @@ export default function GoalsPage() {
       </Card>
 
       {goals.length === 0 ? (
-        <Card>
+        <Card id="goals-list">
           <p className="text-ink/50 text-sm py-6 text-center">No savings goals yet — add one above.</p>
         </Card>
       ) : (
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div id="goals-list" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {goals.some((g) => {
             const progress = progressByGoal[g._id] || 0;
             return g.targetAmount > 0 && progress >= g.targetAmount;

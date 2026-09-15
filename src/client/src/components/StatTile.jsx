@@ -8,10 +8,11 @@ const TONES = {
 // "accent" pulls from the current page's CSS variables (set in AppShell from
 // that page's hero image) instead of a fixed brand color, so stat tiles stay
 // color-matched to whichever page they're rendered on.
-export default function StatTile({ label, value, sublabel, icon: Icon, tone = "forest", className = "" }) {
+export default function StatTile({ id, label, value, sublabel, icon: Icon, tone = "forest", className = "" }) {
   if (tone === "accent") {
     return (
       <div
+        id={id}
         className={`relative overflow-hidden rounded-[1.6rem] border p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)] ${className}`}
         style={{ backgroundColor: "var(--tile-bg)", borderColor: "var(--tile-border)" }}
       >
@@ -37,6 +38,7 @@ export default function StatTile({ label, value, sublabel, icon: Icon, tone = "f
   const t = TONES[tone] || TONES.forest;
   return (
     <div
+      id={id}
       className={`relative overflow-hidden rounded-[1.6rem] border ${t.ring} ${t.bg} p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)] ${className}`}
     >
       <div className={`flex h-9 w-9 items-center justify-center rounded-full ${t.chip} ${t.text}`}>

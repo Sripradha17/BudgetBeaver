@@ -34,15 +34,16 @@ export default function LoginPage({ onLoggedIn }) {
 
   return (
     <div
-      className="min-h-screen overflow-y-auto px-4 py-4 transition-[background] duration-300 sm:px-6 sm:py-5 lg:px-8"
+      id="login-page"
+      className="min-h-screen overflow-y-auto px-4 py-4 transition-[background] duration-300 sm:px-6 sm:py-5 lg:flex lg:items-center lg:justify-center lg:px-8"
       style={{
         ...themeVars(theme),
         background:
           "radial-gradient(1100px 620px at 50% 0%, color-mix(in srgb, var(--accent) 30%, var(--page-wash)) 0%, var(--page-wash) 55%, var(--page-wash) 100%)",
       }}
     >
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-5 py-4 md:grid-cols-[minmax(0,0.95fr)_minmax(19rem,23rem)] lg:min-h-[calc(100vh-2.5rem)] lg:gap-8 lg:py-0">
-        <div className="flex min-w-0 flex-col items-center gap-4 text-center md:items-start md:text-left lg:gap-5">
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-5 py-4 md:items-stretch md:grid-cols-[minmax(0,0.95fr)_minmax(19rem,23rem)] lg:gap-8 lg:py-0">
+        <div id="login-marketing-panel" className="flex min-w-0 flex-col items-center gap-4 text-center md:items-start md:text-left lg:gap-5">
           <div className="inline-flex items-center gap-3 rounded-full border border-white/70 bg-white/72 px-4 py-2 shadow-[0_18px_40px_-28px_rgba(90,76,118,0.45)] backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)] shadow-[0_0_0_7px_color-mix(in_srgb,var(--accent)_18%,transparent)]" />
             <div>
@@ -63,7 +64,7 @@ export default function LoginPage({ onLoggedIn }) {
               Track spending, bills, and savings with a lighter visual style and concise summaries.
             </p>
           </div>
-          <div className="w-full max-w-md overflow-hidden rounded-[1.65rem] border border-white/70 shadow-[0_30px_70px_-42px_rgba(67,54,87,0.38)] md:max-w-[30rem] lg:max-w-[34rem]">
+          <div id="login-intro-gif" className="w-full max-w-md overflow-hidden rounded-[1.65rem] border border-white/70 shadow-[0_30px_70px_-42px_rgba(67,54,87,0.38)] md:max-w-[26rem] lg:max-w-[28rem]">
             <img
               src={aboutIntroGif}
               alt="Budget Raccoon walkthrough"
@@ -73,16 +74,25 @@ export default function LoginPage({ onLoggedIn }) {
         </div>
 
         <form
+          id="login-form"
           onSubmit={handleSubmit}
-          className="relative w-full max-w-md justify-self-center overflow-hidden rounded-[1.9rem] border border-white/80 bg-[linear-gradient(180deg,rgba(255,252,249,0.97),rgba(255,244,250,0.98))] p-4 shadow-[0_30px_80px_-42px_rgba(67,54,87,0.45)] sm:p-5 md:justify-self-end"
+          className="relative flex w-full max-w-md flex-col justify-center self-stretch justify-self-center overflow-hidden rounded-[1.9rem] border border-white/80 bg-[linear-gradient(180deg,rgba(255,252,249,0.97),rgba(255,244,250,0.98))] p-4 shadow-[0_30px_80px_-42px_rgba(67,54,87,0.45)] sm:p-5 md:justify-self-end"
         >
           <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] blur-2xl" />
           <div className="pointer-events-none absolute inset-x-10 bottom-0 h-20 rounded-full bg-[color-mix(in_srgb,var(--accent)_20%,transparent)] blur-3xl" />
           <div className="relative mb-4 flex items-start justify-between gap-3">
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-ink/45">Welcome back</p>
-              <h2 className="mt-1 text-[1.35rem] leading-none text-ink sm:text-[1.55rem]">Sign in</h2>
-              <p className="mt-1.5 text-[12px] leading-5 text-ink/55 sm:text-[13px]">Your monthly summary, categories, and goals in one place.</p>
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-ink/45">
+                {mode === "login" ? "Welcome back" : "Get started"}
+              </p>
+              <h2 className="mt-1 text-[1.35rem] leading-none text-ink sm:text-[1.55rem]">
+                {mode === "login" ? "Sign in" : "Create your account"}
+              </h2>
+              <p className="mt-1.5 text-[12px] leading-5 text-ink/55 sm:text-[13px]">
+                {mode === "login"
+                  ? "Your monthly summary, categories, and goals in one place."
+                  : "Set up your own household in under a minute."}
+              </p>
             </div>
             <div className="h-12 w-12 rounded-[1rem] bg-[linear-gradient(135deg,var(--accent),var(--accent-hover))] shadow-[0_18px_28px_-22px_rgba(0,0,0,0.8)] sm:h-14 sm:w-14" />
           </div>
@@ -98,8 +108,9 @@ export default function LoginPage({ onLoggedIn }) {
             </div>
           </div>
 
-          <div className="flex rounded-[1.2rem] border border-white/70 bg-white/80 p-1 text-sm shadow-[0_16px_30px_-28px_rgba(0,0,0,0.9)]">
+          <div id="login-mode-tabs" className="flex rounded-[1.2rem] border border-white/70 bg-white/80 p-1 text-sm shadow-[0_16px_30px_-28px_rgba(0,0,0,0.9)]">
             <button
+              id="login-tab-signin"
               type="button"
               onClick={() => {
                 setMode("login");
@@ -112,6 +123,7 @@ export default function LoginPage({ onLoggedIn }) {
               Log in
             </button>
             <button
+              id="login-tab-signup"
               type="button"
               onClick={() => {
                 setMode("signup");
@@ -130,6 +142,7 @@ export default function LoginPage({ onLoggedIn }) {
               Email
             </label>
             <input
+              id="login-email-input"
               type="email"
               autoFocus
               value={email}
@@ -144,6 +157,7 @@ export default function LoginPage({ onLoggedIn }) {
               Password
             </label>
             <input
+              id="login-password-input"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -161,6 +175,7 @@ export default function LoginPage({ onLoggedIn }) {
           )}
           {error && <p className="mt-3 text-[13px] text-red-500 sm:text-sm">{error}</p>}
           <button
+            id="login-submit-button"
             type="submit"
             disabled={submitting}
             className="mt-4 w-full rounded-[1.2rem] bg-[linear-gradient(90deg,var(--accent),var(--accent-hover))] px-4 py-2.5 text-[13px] font-extrabold uppercase tracking-[0.18em] text-white shadow-[0_18px_28px_-20px_color-mix(in_srgb,var(--accent)_70%,transparent)] hover:opacity-95 disabled:opacity-50 sm:text-sm"

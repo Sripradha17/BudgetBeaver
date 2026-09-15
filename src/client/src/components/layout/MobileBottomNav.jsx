@@ -17,6 +17,7 @@ export default function MobileBottomNav({ onLogout }) {
   return (
     <>
       <nav
+        id="app-bottom-nav"
         className="fixed inset-x-0 bottom-0 z-30 flex items-stretch border-t border-[color-mix(in_srgb,var(--shell-text)_15%,transparent)] backdrop-blur pb-[env(safe-area-inset-bottom)] lg:hidden transition-colors duration-300"
         style={{ backgroundColor: "color-mix(in srgb, var(--page-wash) 95%, transparent)" }}
         aria-label="Primary"
@@ -24,6 +25,7 @@ export default function MobileBottomNav({ onLogout }) {
         {primaryItems.map(({ id, label, icon: Icon, path }) => (
           <NavLink
             key={id}
+            id={`bottom-nav-${id}`}
             to={path}
             end={path === "/"}
             className={({ isActive }) =>
@@ -43,6 +45,7 @@ export default function MobileBottomNav({ onLogout }) {
           </NavLink>
         ))}
         <button
+          id="bottom-nav-more"
           onClick={() => setShowMore(true)}
           className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium ${
             moreIsActive ? "text-[var(--accent)]" : "text-[color-mix(in_srgb,var(--shell-text)_55%,transparent)]"

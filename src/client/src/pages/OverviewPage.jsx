@@ -120,8 +120,8 @@ export default function OverviewPage() {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-end justify-between gap-3">
+    <div id="overview-page" className="space-y-5">
+      <div id="overview-header" className="flex items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-2xl font-extrabold text-[var(--shell-text)] sm:text-[1.7rem]">
             {greeting()}, {settings.myLabel} 👋
@@ -134,6 +134,7 @@ export default function OverviewPage() {
           </p>
         </div>
         <button
+          id="overview-export-button"
           onClick={handleExport}
           className="hidden items-center gap-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium px-3 py-2 hover:bg-[var(--accent-hover)] hover:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent)_25%,transparent)] sm:flex"
         >
@@ -141,29 +142,30 @@ export default function OverviewPage() {
         </button>
       </div>
 
-      <SafeToSpendCard amount={currentBalance} currency={settings.currency} changePct={balanceChangePct} />
+      <SafeToSpendCard id="overview-safe-to-spend" amount={currentBalance} currency={settings.currency} changePct={balanceChangePct} />
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+      <div id="overview-stat-tiles" className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
         <StatTile label="Income" value={fmt(totalIncome)} icon={Wallet} tone="accent" />
         <StatTile label="Expenses" value={fmt(totalExpenses)} icon={TrendingDown} tone="accent" />
         <StatTile label="Savings" value={fmt(savingsThisMonth)} icon={PiggyBank} tone="accent" className="col-span-2 sm:col-span-1" />
       </div>
 
-      <div className="grid lg:grid-cols-[1.1fr_1fr] gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-4">
         <BudgetOverviewCard
+          id="overview-budget-card"
           rows={budgetRows}
           allCategories={categories}
           totalBudget={totalBudget}
           totalSpent={totalBudgetSpent}
           currency={settings.currency}
         />
-        <RecentActivity items={recentActivity} currency={settings.currency} />
+        <RecentActivity id="overview-recent-activity" items={recentActivity} currency={settings.currency} />
       </div>
 
-      <MoneyFactCard />
+      <MoneyFactCard id="overview-money-fact" />
 
       {insights.hasPrevData && (insights.changes.length > 0 || insights.totalPct !== null) && (
-        <Card>
+        <Card id="overview-insights">
           <h3 className="font-bold text-sm flex items-center gap-1.5 mb-3">
             <Sparkles size={15} className="text-[var(--accent-text)]" /> What changed this month
           </h3>
@@ -233,17 +235,17 @@ export default function OverviewPage() {
         </Card>
       )}
 
-      <h2 className="font-bold text-lg flex items-center gap-1.5 text-[var(--shell-text)]">
+      <h2 id="overview-category-breakdown-heading" className="font-bold text-lg flex items-center gap-1.5 text-[var(--shell-text)]">
         <PieChart size={18} className="text-[var(--accent)]" /> This month's category breakdown
       </h2>
       {byCategory.length === 0 ? (
-        <Card>
+        <Card id="overview-category-breakdown">
           <p className="text-ink/50 text-sm py-6 text-center">
             No expenses yet this month — log one to see your breakdown.
           </p>
         </Card>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div id="overview-category-breakdown" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {byCategory.map(({ category, total }, idx) => (
             <CategoryTile
               key={category.id}

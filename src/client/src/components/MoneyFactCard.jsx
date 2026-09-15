@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { factForIndex } from "../lib/moneyFacts.js";
 
-export default function MoneyFactCard({ className = "" }) {
+export default function MoneyFactCard({ id, className = "" }) {
   const [index, setIndex] = useState(() => Math.floor(Math.random() * 10));
 
   useEffect(() => {
-    const id = setInterval(() => setIndex((i) => i + 1), 9000);
-    return () => clearInterval(id);
+    const timerId = setInterval(() => setIndex((i) => i + 1), 9000);
+    return () => clearInterval(timerId);
   }, []);
 
   return (
     <div
+      id={id}
       className={`relative overflow-hidden rounded-[1.75rem] border p-4 shadow-soft ${className}`}
       style={{
         backgroundColor: "var(--card-bg)",

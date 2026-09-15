@@ -7,10 +7,11 @@ import { clearToken } from "../../lib/api.js";
 export default function Sidebar({ onLogout }) {
   return (
     <aside
+      id="app-sidebar"
       className="hidden lg:flex lg:flex-col fixed left-0 top-0 bottom-0 w-[264px] border-r border-[color-mix(in_srgb,var(--shell-text)_15%,transparent)] z-30 transition-colors duration-300"
       style={{ backgroundColor: "var(--page-wash)" }}
     >
-      <NavLink to="/" className="flex items-center gap-3 px-6 pt-6 pb-5 text-left">
+      <NavLink id="sidebar-logo" to="/" className="flex items-center gap-3 px-6 pt-6 pb-5 text-left">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl overflow-hidden">
           <img src={mascot} alt="" className="h-full w-full object-cover" />
         </div>
@@ -24,10 +25,11 @@ export default function Sidebar({ onLogout }) {
         </div>
       </NavLink>
 
-      <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto" aria-label="Primary">
+      <nav id="sidebar-nav" className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto" aria-label="Primary">
         {NAV_ITEMS.map(({ id, label, icon: Icon, path }) => (
           <NavLink
             key={id}
+            id={`sidebar-nav-${id}`}
             to={path}
             end={path === "/"}
             className={({ isActive }) =>
@@ -58,6 +60,7 @@ export default function Sidebar({ onLogout }) {
 
       <div className="px-3 pb-5 pt-2 border-t border-[color-mix(in_srgb,var(--shell-text)_15%,transparent)]">
         <button
+          id="sidebar-logout"
           onClick={() => {
             clearToken();
             onLogout();

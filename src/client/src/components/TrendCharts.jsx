@@ -53,7 +53,7 @@ function CurrencyTooltip({ active, payload, label, currency }) {
 
 export function IncomeExpenseTrendChart({ data, currency }) {
   return (
-    <Card>
+    <Card id="reports-income-expense-chart">
       <h3 className="font-bold mb-3">Income vs. expenses by month</h3>
       <ResponsiveContainer width="100%" height={240}>
         <BarChart data={data} margin={{ left: 0, right: 10 }} barGap={4}>
@@ -72,7 +72,7 @@ export function IncomeExpenseTrendChart({ data, currency }) {
 
 export function SavingsInvestmentTrendChart({ data, currency }) {
   return (
-    <Card>
+    <Card id="reports-savings-investment-chart">
       <h3 className="font-bold mb-3">Savings &amp; investment growth over time</h3>
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={data} margin={{ left: 0, right: 10 }}>
