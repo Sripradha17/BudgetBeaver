@@ -1,7 +1,7 @@
 // App-shell caching: always try the network first (this app needs live data), and
 // fall back to whatever's cached when offline. Never touches /api/ requests — those
 // must always hit the real server or fail outright, not serve stale financial data.
-const CACHE_NAME = "budget-raccoon-shell-v1";
+const CACHE_NAME = "budget-beaver-shell-v1";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -18,7 +18,7 @@ self.addEventListener("activate", (event) => {
 
 // Bill-reminder push notifications, sent by the daily cron job.
 self.addEventListener("push", (event) => {
-  let data = { title: "Budget Raccoon", body: "You have a bill due tomorrow." };
+  let data = { title: "Budget Beaver", body: "You have a bill due tomorrow." };
   try {
     data = event.data.json();
   } catch {

@@ -9,7 +9,7 @@ const router = Router();
 
 if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
   webpush.setVapidDetails(
-    "mailto:notifications@budgetraccoon.app",
+    "mailto:notifications@budgetbeaver.app",
     process.env.VAPID_PUBLIC_KEY,
     process.env.VAPID_PRIVATE_KEY
   );

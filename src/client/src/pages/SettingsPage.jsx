@@ -135,7 +135,7 @@ export default function SettingsPage({ onLogout }) {
         tint="teal"
         eyebrow="Settings"
         title="Small changes, big control"
-        description="Fine-tune currency, categories, and reminders — make Budget Raccoon fit exactly how you manage money."
+        description="Fine-tune currency, categories, and reminders — make Budget Beaver fit exactly how you manage money."
         image={illustrations.goalsAdventure}
         aspect={HERO_ASPECT}
         edgeColor={illustrationEdgeColor.goalsAdventure}

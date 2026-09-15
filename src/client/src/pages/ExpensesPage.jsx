@@ -259,7 +259,7 @@ export default function ExpensesPage() {
         tint="coral"
         eyebrow="Expenses"
         title="Track every dollar"
-        description="Log it in a few seconds — the raccoon keeps a running tally, categorized and ready to export."
+        description="Log it in a few seconds — the beaver keeps a running tally, categorized and ready to export."
         image={illustrations.expenses}
         aspect={HERO_ASPECT}
         edgeColor={illustrationEdgeColor.expenses}

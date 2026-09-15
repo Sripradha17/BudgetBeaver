@@ -35,7 +35,7 @@ export function exportExpensesCsv(expenses, categoryById, settings) {
     { label: "Foreign amount", value: (e) => (e.foreignCurrency ? e.foreignAmount : "") },
     { label: "Foreign currency", value: (e) => e.foreignCurrency || "" },
   ]);
-  download(`budget-raccoon-expenses-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+  download(`budget-beaver-expenses-${new Date().toISOString().slice(0, 10)}.csv`, csv);
 }
 
 export function exportIncomeCsv(income, settings) {
@@ -45,5 +45,5 @@ export function exportIncomeCsv(income, settings) {
     { label: "Amount", value: (i) => i.amount },
     { label: "Person", value: (i) => (i.person === "spouse" ? settings.spouseLabel : settings.myLabel) },
   ]);
-  download(`budget-raccoon-income-${new Date().toISOString().slice(0, 10)}.csv`, csv);
+  download(`budget-beaver-income-${new Date().toISOString().slice(0, 10)}.csv`, csv);
 }

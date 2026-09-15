@@ -5,6 +5,6 @@ export async function connectDB() {
   if (!uri) {
     throw new Error("MONGODB_URI is not set. Add it to your .env file.");
   }
-  await mongoose.connect(uri, { dbName: process.env.MONGODB_DB || "budget-raccoon" });
+  await mongoose.connect(uri, { dbName: process.env.MONGODB_DB || "budget-beaver" });
   console.log("Connected to MongoDB Atlas");
 }

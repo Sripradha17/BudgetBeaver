@@ -6,7 +6,7 @@ import { pageTheme, themeVars } from "../theme/pageTheme.js";
 export default function LoginPage({ onLoggedIn }) {
   const [mode, setMode] = useState("login"); // "login" | "signup"
   // Sign in/up each get their own accent, sampled from the intro gif's two
-  // dominant colors (its raccoon green, and its coin gold) instead of one
+  // dominant colors (its beaver green, and its coin gold) instead of one
   // fixed brand color — so the tab you're on tints the whole page.
   const theme = mode === "login" ? pageTheme.loginSignIn : pageTheme.loginSignUp;
   const [email, setEmail] = useState("");
@@ -49,7 +49,7 @@ export default function LoginPage({ onLoggedIn }) {
             <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)] shadow-[0_0_0_7px_color-mix(in_srgb,var(--accent)_18%,transparent)]" />
             <div>
               <span className="block font-display text-[1.18rem] font-extrabold leading-none text-ink sm:text-[1.35rem]">
-                Budget Raccoon
+                Budget Beaver
               </span>
               <span className="block text-[10px] font-extrabold uppercase tracking-[0.24em] text-[var(--accent-text)]">
                 Personal finance
@@ -68,7 +68,7 @@ export default function LoginPage({ onLoggedIn }) {
           <div id="login-intro-gif" className="w-full max-w-md overflow-hidden rounded-[1.65rem] border border-white/70 shadow-[0_30px_70px_-42px_rgba(67,54,87,0.38)] md:max-w-[26rem] lg:max-w-[28rem]">
             <img
               src={aboutIntroGif}
-              alt="Budget Raccoon walkthrough"
+              alt="Budget Beaver walkthrough"
               className="block h-auto w-full"
             />
           </div>

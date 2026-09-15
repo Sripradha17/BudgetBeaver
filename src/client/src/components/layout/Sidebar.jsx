@@ -17,7 +17,7 @@ export default function Sidebar({ onLogout }) {
         </div>
         <div className="min-w-0">
           <span className="block font-display text-[15px] font-bold leading-tight text-[var(--shell-text)]">
-            Budget Raccoon
+            Budget Beaver
           </span>
           <span className="block text-[11px] font-medium text-[color-mix(in_srgb,var(--shell-text)_55%,transparent)]">
             Personal finance

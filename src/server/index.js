@@ -35,7 +35,7 @@ app.use("/api/cron", cronRouter);
 
 connectDB()
   .then(() => {
-    app.listen(PORT, () => console.log(`Budget Raccoon API listening on port ${PORT}`));
+    app.listen(PORT, () => console.log(`Budget Beaver API listening on port ${PORT}`));
   })
   .catch((err) => {
     console.error("Failed to connect to MongoDB:", err.message);

@@ -1,7 +1,7 @@
 {
-  "name": "budget-raccoon",
+  "name": "budget-beaver",
   "version": "1.0.0",
-  "description": "Budget Raccoon - household finance tracker",
+  "description": "Budget Beaver - household finance tracker",
   "private": true,
   "type": "module",
   "scripts": {

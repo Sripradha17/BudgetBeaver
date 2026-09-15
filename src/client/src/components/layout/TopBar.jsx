@@ -10,7 +10,7 @@ const MONTH_SCOPED_PATHS = new Set(["/overview", "/expenses", "/income", "/budge
 export default function TopBar() {
   const location = useLocation();
   const active = NAV_ITEMS.find((item) => (item.path === "/" ? location.pathname === "/" : location.pathname.startsWith(item.path)));
-  const title = active?.label || "Budget Raccoon";
+  const title = active?.label || "Budget Beaver";
   const isHome = location.pathname === "/";
   const showMonth = MONTH_SCOPED_PATHS.has(location.pathname);
 

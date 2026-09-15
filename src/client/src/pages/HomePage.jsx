@@ -139,7 +139,9 @@ export default function HomePage() {
         heroHeight={500}
       >
         <div>
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-white/55">Safe to spend</p>
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-white/55">
+            {currentBalance < 0 ? "Over budget" : "Safe to spend"}
+          </p>
           <p className="mt-1 font-display text-4xl font-extrabold leading-none tabular-nums sm:text-5xl">
             {currentBalance < 0 ? "-" : ""}
             {fmt(currentBalance)}
@@ -154,7 +156,11 @@ export default function HomePage() {
               {Math.abs(balanceChangePct).toFixed(0)}% from last month
             </div>
           ) : (
-            <p className="mt-3 text-xs text-white/60">This month's income minus spending.</p>
+            <p className="mt-3 text-xs text-white/60">
+              {currentBalance < 0
+                ? "You've spent more than you've earned this month."
+                : "This month's income minus spending."}
+            </p>
           )}
         </div>
 

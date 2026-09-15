@@ -5,6 +5,7 @@ import mascot from "../assets/illustrations/mascot.jpg";
 export default function SafeToSpendCard({ id, amount, currency, changePct, className = "" }) {
   const hasChange = changePct !== null && Number.isFinite(changePct);
   const isUp = hasChange && changePct >= 0;
+  const isNegative = amount < 0;
 
   return (
     <div
@@ -19,9 +20,10 @@ export default function SafeToSpendCard({ id, amount, currency, changePct, class
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         <div className="min-w-0">
           <p className="text-[11px] font-extrabold uppercase tracking-[0.24em] text-white/70">
-            Safe to spend
+            {isNegative ? "Over budget" : "Safe to spend"}
           </p>
           <p className="mt-2 font-display text-[2.75rem] leading-none font-extrabold tabular-nums sm:text-[3.4rem]">
+            {isNegative ? "-" : ""}
             {currency}
             {Math.abs(amount).toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </p>
@@ -36,7 +38,11 @@ export default function SafeToSpendCard({ id, amount, currency, changePct, class
             </div>
           )}
           {!hasChange && (
-            <p className="mt-3 text-sm text-white/70">This month's income minus spending.</p>
+            <p className="mt-3 text-sm text-white/70">
+              {isNegative
+                ? "You've spent more than you've earned this month."
+                : "This month's income minus spending."}
+            </p>
           )}
         </div>
 
@@ -48,7 +54,7 @@ export default function SafeToSpendCard({ id, amount, currency, changePct, class
           <Coin className="absolute right-6 -top-1 h-5 w-5 drop-shadow-[0_6px_10px_rgba(0,0,0,0.25)]" />
           <img
             src={mascot}
-            alt="Budget Raccoon"
+            alt="Budget Beaver"
             className="absolute inset-2 h-[calc(100%-1rem)] w-[calc(100%-1rem)] rounded-full object-cover shadow-[0_18px_22px_rgba(0,0,0,0.3)]"
           />
         </div>

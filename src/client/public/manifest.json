@@ -1,16 +1,16 @@
 {
-  "name": "Budget Raccoon",
-  "short_name": "Budget Raccoon",
+  "name": "Budget Beaver",
+  "short_name": "Budget Beaver",
   "description": "Household finance tracker",
-  "start_url": "/BudgetRaccoon/",
-  "scope": "/BudgetRaccoon/",
+  "start_url": "/BudgetBeaver/",
+  "scope": "/BudgetBeaver/",
   "display": "standalone",
   "background_color": "#fff8ef",
   "theme_color": "#ffd8eb",
   "orientation": "portrait",
   "icons": [
-    { "src": "/BudgetRaccoon/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/BudgetRaccoon/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/BudgetRaccoon/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "/BudgetBeaver/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/BudgetBeaver/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/BudgetBeaver/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

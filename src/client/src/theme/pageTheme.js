@@ -1,7 +1,7 @@
 // Each page's accent palette is derived from the dominant hue sampled out of
 // that page's own hero photo (a hue-bucket histogram over the image,
 // excluding near-neutral pixels). Login's two variants come from the
-// about_page.gif's own primary (raccoon green) and secondary (coin gold)
+// about_page.gif's own primary (beaver green) and secondary (coin gold)
 // colors. pageWash/tileBg/cardBorder are deliberately saturated enough to
 // read as "this page is blue/gold/teal" at a glance, not just an off-white
 // hint — cardBg stays near-white so text on cards keeps full contrast.
@@ -24,7 +24,7 @@ export const pageTheme = {
     graphColor: "#1d4387",
     heroCorner: "#152237",
   },
-  // Overview has no hero photo of its own — its color comes from the raccoon
+  // Overview has no hero photo of its own — its color comes from the beaver
   // mascot's own green ("Safe to spend" card), same dark-shell treatment as
   // Dashboard: dark green shell + nav, lighter green cards/tiles on top.
   overview: {

@@ -1,4 +1,4 @@
-# Budget Raccoon
+# Budget Beaver
 
 A household finance tracker — log expenses and income, set monthly category budgets, track
 savings goals, get bill-due push reminders, import past expenses from Excel/CSV, and export
@@ -18,7 +18,7 @@ beyond the auth token).
 1. **MongoDB Atlas connection string** — put it in the `.env` file at the project root:
 
    ```
-   MONGODB_URI="mongodb+srv://<user>:<password>@<cluster-url>/budget-raccoon?retryWrites=true&w=majority"
+   MONGODB_URI="mongodb+srv://<user>:<password>@<cluster-url>/budget-beaver?retryWrites=true&w=majority"
    PORT=5000
    JWT_SECRET="a long random string"
    ```
@@ -120,9 +120,9 @@ places:
   Access**, allow `0.0.0.0/0` — Render's free tier doesn't have a fixed outbound IP, so you
   can't whitelist a single address.
 - **Wire them together.** Once the Render service is live, copy its URL (e.g.
-  `https://budget-raccoon-api.onrender.com`) and add it as a GitHub Actions secret named
+  `https://budget-beaver-api.onrender.com`) and add it as a GitHub Actions secret named
   `VITE_API_URL`, with `/api` appended (**Settings → Secrets and variables → Actions →
-  New repository secret**): `https://budget-raccoon-api.onrender.com/api`. Push to `main` (or
+  New repository secret**): `https://budget-beaver-api.onrender.com/api`. Push to `main` (or
   re-run the workflow) to rebuild the client against the live API.
 - **Bill reminders.** `.github/workflows/bill-reminders.yml` runs daily and calls
   `GET /api/cron/check-bills` on the live server. It needs two more GitHub Actions secrets —

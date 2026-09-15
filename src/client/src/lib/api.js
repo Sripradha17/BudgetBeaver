@@ -3,7 +3,7 @@
 // Local dev has no VITE_API_URL, so it falls back to the relative path Vite proxies to
 // localhost:5000 (see vite.config.js).
 const BASE = import.meta.env.VITE_API_URL || "/api";
-const TOKEN_KEY = "budget_raccoon_token";
+const TOKEN_KEY = "budget_beaver_token";
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
@@ -45,7 +45,7 @@ async function request(path, options = {}) {
   });
   if (res.status === 401) {
     clearToken();
-    window.dispatchEvent(new Event("budget-raccoon:unauthorized"));
+    window.dispatchEvent(new Event("budget-beaver:unauthorized"));
     throw new Error("Not logged in");
   }
   if (!res.ok) {

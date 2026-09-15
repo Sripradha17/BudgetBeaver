@@ -22,8 +22,8 @@ export default function App() {
       clearToken();
       setAuthed(false);
     }
-    window.addEventListener("budget-raccoon:unauthorized", handleUnauthorized);
-    return () => window.removeEventListener("budget-raccoon:unauthorized", handleUnauthorized);
+    window.addEventListener("budget-beaver:unauthorized", handleUnauthorized);
+    return () => window.removeEventListener("budget-beaver:unauthorized", handleUnauthorized);
   }, []);
 
   if (!authed) {

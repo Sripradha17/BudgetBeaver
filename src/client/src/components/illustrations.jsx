@@ -1,5 +1,5 @@
 // Small, original decorative SVG shapes used to dress up dashboard cards —
-// coins, sparkles, organic blobs. Kept separate from the raccoon mascot art.
+// coins, sparkles, organic blobs. Kept separate from the beaver mascot art.
 
 export function Coin({ className = "", size = 28 }) {
   return (

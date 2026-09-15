@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) throw new Error("MONGODB_URI not set");
 
-await mongoose.connect(MONGODB_URI, { dbName: process.env.MONGODB_DB || "budget-raccoon" });
+await mongoose.connect(MONGODB_URI, { dbName: process.env.MONGODB_DB || "budget-beaver" });
 console.log("Connected to MongoDB, db:", mongoose.connection.db.databaseName);
 
 const householdSchema = new mongoose.Schema({ createdAt: { type: Date, default: Date.now } });
