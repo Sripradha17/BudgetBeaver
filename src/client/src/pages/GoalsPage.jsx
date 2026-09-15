@@ -71,7 +71,7 @@ export default function GoalsPage() {
           celebration photo when a goal is met. Same hero language as every
           other page: photo dissolves into the panel, no card, no border. */}
       <PageHero
-        tint="teal"
+        tint="plum"
         eyebrow="Goals"
         title="Turn saving into doing"
         description="Set a target, track progress, and watch it add up."
@@ -82,7 +82,7 @@ export default function GoalsPage() {
 
       <Card>
           <h2 className="font-bold text-lg mb-3 flex items-center gap-1.5">
-            <PiggyBank size={18} className="text-coral" /> New savings goal
+            <PiggyBank size={18} className="text-[var(--accent-text)]" /> New savings goal
           </h2>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-5 gap-3">
           <input
@@ -90,7 +90,7 @@ export default function GoalsPage() {
             placeholder="Goal name"
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            className="sm:col-span-2 rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+            className="sm:col-span-2 rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
             required
           />
           <input
@@ -100,19 +100,19 @@ export default function GoalsPage() {
             placeholder={`Target (${settings.currency})`}
             value={form.targetAmount}
             onChange={(e) => setForm((f) => ({ ...f, targetAmount: e.target.value }))}
-            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
             required
           />
           <input
             type="date"
             value={form.targetDate}
             onChange={(e) => setForm((f) => ({ ...f, targetDate: e.target.value }))}
-            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
           />
           <select
             value={form.linkedCategoryId}
             onChange={(e) => setForm((f) => ({ ...f, linkedCategoryId: e.target.value }))}
-            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
           >
             <option value="">Track manually</option>
             {categories.map((c) => (
@@ -124,7 +124,7 @@ export default function GoalsPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="sm:col-span-5 flex items-center justify-center gap-1.5 rounded-lg bg-coral text-white font-medium px-3 py-2 text-sm hover:bg-coral/90 disabled:opacity-50 sm:w-auto sm:justify-self-start sm:px-6"
+            className="sm:col-span-5 flex items-center justify-center gap-1.5 rounded-lg bg-[var(--accent)] text-white font-medium px-3 py-2 text-sm hover:bg-[var(--accent-hover)] disabled:opacity-50 sm:w-auto sm:justify-self-start sm:px-6"
           >
             <Plus size={16} /> Add goal
           </button>
@@ -176,7 +176,7 @@ export default function GoalsPage() {
                     {reached ? (
                       <PartyPopper size={16} className="text-gold shrink-0" />
                     ) : (
-                      <Target size={16} className="text-teal shrink-0" />
+                      <Target size={16} className="text-[var(--accent-text)] shrink-0" />
                     )}
                     <span className="font-semibold text-sm truncate">{g.name}</span>
                   </div>
@@ -191,7 +191,7 @@ export default function GoalsPage() {
                 <div className="h-2.5 rounded-full bg-mist overflow-hidden mb-1.5">
                   <div
                     className={`h-full rounded-full transition-[width] duration-700 ease-out ${
-                      reached ? "bg-gradient-to-r from-gold to-teal" : "bg-teal"
+                      reached ? "bg-gradient-to-r from-gold to-[var(--accent)]" : "bg-[var(--accent)]"
                     }`}
                     style={{ width: `${pct}%` }}
                   />
@@ -228,7 +228,7 @@ export default function GoalsPage() {
                     {isEditingProgress && (
                       <button
                         onClick={() => saveProgress(g._id)}
-                        className="rounded bg-teal text-white text-xs font-medium px-2 py-1 hover:bg-teal/90"
+                        className="rounded bg-[var(--accent)] text-white text-xs font-medium px-2 py-1 hover:bg-[var(--accent-hover)]"
                       >
                         Save
                       </button>

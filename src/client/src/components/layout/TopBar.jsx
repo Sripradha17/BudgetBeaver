@@ -15,7 +15,10 @@ export default function TopBar() {
   const showMonth = MONTH_SCOPED_PATHS.has(location.pathname);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-white/60 bg-surface/90 backdrop-blur">
+    <header
+      className="sticky top-0 z-20 border-b border-[color-mix(in_srgb,var(--shell-text)_15%,transparent)] backdrop-blur transition-colors duration-300"
+      style={{ backgroundColor: "color-mix(in srgb, var(--page-wash) 92%, transparent)" }}
+    >
       <div className="flex items-center justify-between gap-2 px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-2.5">
           {isHome && (
@@ -23,7 +26,7 @@ export default function TopBar() {
               <img src={mascot} alt="" className="h-full w-full object-cover" />
             </div>
           )}
-          <h1 className="truncate font-display text-lg font-extrabold text-ink lg:text-xl">{title}</h1>
+          <h1 className="truncate font-display text-lg font-extrabold text-[var(--shell-text)] lg:text-xl">{title}</h1>
         </div>
         {showMonth && <MonthNavigator />}
       </div>

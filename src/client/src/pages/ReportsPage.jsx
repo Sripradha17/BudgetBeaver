@@ -5,6 +5,8 @@ import { useMonth } from "../context/MonthContext.jsx";
 import { buildMonthlyTrends } from "../lib/trends.js";
 import Card from "../components/Card.jsx";
 import CategoryBadge from "../components/CategoryBadge.jsx";
+import { categoryIndex } from "../lib/categories.js";
+import { shadeCss } from "../lib/shades.js";
 import PageHero from "../components/PageHero.jsx";
 import { illustrations, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 import { IncomeExpenseTrendChart, SavingsInvestmentTrendChart } from "../components/TrendCharts.jsx";
@@ -63,7 +65,7 @@ export default function ReportsPage() {
   return (
     <div className="space-y-5">
       <PageHero
-        tint="plum"
+        tint="coral"
         eyebrow="Reports"
         title="See the whole picture"
         description="All-time trends across income, spending, and how much you've put toward savings and investments."
@@ -75,7 +77,10 @@ export default function ReportsPage() {
       <div className="grid sm:grid-cols-3 gap-4">
         <Card className="text-center">
           <p className="text-xs text-ink/50 uppercase">Net worth</p>
-          <p className={`font-display font-bold text-3xl ${totals.netWorth >= 0 ? "text-teal" : "text-coral"}`}>
+          <p
+            className="font-display font-bold text-3xl"
+            style={{ color: totals.netWorth >= 0 ? "var(--accent-text)" : shadeCss(1) }}
+          >
             {totals.netWorth < 0 ? "-" : ""}
             {fmt(Math.abs(totals.netWorth))}
           </p>
@@ -83,13 +88,13 @@ export default function ReportsPage() {
         </Card>
         <Card>
           <p className="text-xs text-ink/50 uppercase mb-1">Total income, all time</p>
-          <p className="font-display font-bold text-xl text-teal flex items-center gap-1.5">
+          <p className="font-display font-bold text-xl text-[var(--accent-text)] flex items-center gap-1.5">
             <TrendingUp size={18} /> {fmt(totals.totalIncome)}
           </p>
         </Card>
         <Card>
           <p className="text-xs text-ink/50 uppercase mb-1">Savings rate</p>
-          <p className="font-display font-bold text-xl text-forest flex items-center gap-1.5">
+          <p className="font-display font-bold text-xl text-[var(--accent-text)] flex items-center gap-1.5">
             <PiggyBank size={18} /> {savingsRate.toFixed(0)}%
           </p>
           <p className="text-xs text-ink/40 mt-0.5">Of all-time income invested or saved</p>
@@ -103,7 +108,7 @@ export default function ReportsPage() {
 
       <Card>
         <h2 className="font-bold text-lg mb-3 flex items-center gap-1.5">
-          <Sparkles size={17} className="text-gold" /> Invested & saved
+          <Sparkles size={17} className="text-[var(--accent-text)]" /> Invested & saved
         </h2>
         {wealthByCategory.length === 0 ? (
           <div className="flex flex-col items-center py-6 gap-2">
@@ -116,8 +121,8 @@ export default function ReportsPage() {
             <ul className="divide-y divide-mist">
               {wealthByCategory.map(({ category, total }) => (
                 <li key={category.id} className="flex items-center justify-between py-2.5">
-                  <CategoryBadge category={category} />
-                  <span className="text-sm font-semibold text-teal">{fmt(total)}</span>
+                  <CategoryBadge category={category} index={categoryIndex(categories, category.id)} />
+                  <span className="text-sm font-semibold text-[var(--accent-text)]">{fmt(total)}</span>
                 </li>
               ))}
             </ul>

@@ -6,7 +6,7 @@ export default function UndoToast({ message, onUndo, onDismiss }) {
       <span className="text-sm text-ink truncate">{message}</span>
       <button
         onClick={onUndo}
-        className="shrink-0 text-sm font-semibold text-teal hover:underline"
+        className="shrink-0 text-sm font-semibold text-[var(--accent-text)] hover:underline"
       >
         Undo
       </button>

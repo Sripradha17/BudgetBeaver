@@ -14,7 +14,7 @@ export default function CategoryChipPicker({ categories, value, onChange, classN
                 ? "text-white border-transparent shadow-[0_10px_20px_-14px_rgba(0,0,0,0.6)]"
                 : "text-ink/60 bg-white/75 border-mist hover:border-ink/25 hover:text-ink"
             }`}
-            style={selected ? { backgroundColor: c.badgeColor } : undefined}
+            style={selected ? { backgroundColor: "var(--accent)" } : undefined}
           >
             <Icon size={13} />
             {c.label}

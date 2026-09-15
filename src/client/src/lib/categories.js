@@ -45,6 +45,14 @@ export function colorForNewCategory(existingCount) {
   return FALLBACK_COLORS[existingCount % FALLBACK_COLORS.length];
 }
 
+// Stable position of a category within the full list — used to pick a
+// shade off the current page's accent color for that category, so the same
+// category always renders the same shade within one page.
+export function categoryIndex(allCategories, id) {
+  const idx = allCategories.findIndex((c) => c.id === id);
+  return idx < 0 ? 0 : idx;
+}
+
 export function mergeCategories(customCategories) {
   const custom = customCategories.map((c) => ({ ...c, icon: MoreHorizontal, isCustom: true }));
   return [...DEFAULT_CATEGORIES, ...custom];

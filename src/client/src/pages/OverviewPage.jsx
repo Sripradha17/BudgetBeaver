@@ -6,6 +6,7 @@ import { monthKey } from "../lib/month.js";
 import { buildMonthlyTrends } from "../lib/trends.js";
 import { buildInsights } from "../lib/insights.js";
 import { getEffectiveBudget } from "../lib/budgets.js";
+import { categoryIndex } from "../lib/categories.js";
 import Card from "../components/Card.jsx";
 import SafeToSpendCard from "../components/SafeToSpendCard.jsx";
 import StatTile from "../components/StatTile.jsx";
@@ -122,14 +123,19 @@ export default function OverviewPage() {
     <div className="space-y-5">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-extrabold text-ink sm:text-[1.7rem]">
+          <h1 className="font-display text-2xl font-extrabold text-[var(--shell-text)] sm:text-[1.7rem]">
             {greeting()}, {settings.myLabel} 👋
           </h1>
-          <p className="mt-0.5 text-sm text-ink/55">Here's how your money is doing.</p>
+          <p
+            className="mt-0.5 text-sm"
+            style={{ color: "color-mix(in srgb, var(--shell-text) 65%, transparent)" }}
+          >
+            Here's how your money is doing.
+          </p>
         </div>
         <button
           onClick={handleExport}
-          className="hidden items-center gap-1.5 rounded-lg bg-plum text-white text-sm font-medium px-3 py-2 hover:bg-plum/90 hover:shadow-[0_0_0_3px_rgba(138,118,172,0.25)] sm:flex"
+          className="hidden items-center gap-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium px-3 py-2 hover:bg-[var(--accent-hover)] hover:shadow-[0_0_0_3px_color-mix(in_srgb,var(--accent)_25%,transparent)] sm:flex"
         >
           <Download size={16} /> Export
         </button>
@@ -138,14 +144,15 @@ export default function OverviewPage() {
       <SafeToSpendCard amount={currentBalance} currency={settings.currency} changePct={balanceChangePct} />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-        <StatTile label="Income" value={fmt(totalIncome)} icon={Wallet} tone="sky" />
-        <StatTile label="Expenses" value={fmt(totalExpenses)} icon={TrendingDown} tone="coral" />
-        <StatTile label="Savings" value={fmt(savingsThisMonth)} icon={PiggyBank} tone="forest" className="col-span-2 sm:col-span-1" />
+        <StatTile label="Income" value={fmt(totalIncome)} icon={Wallet} tone="accent" />
+        <StatTile label="Expenses" value={fmt(totalExpenses)} icon={TrendingDown} tone="accent" />
+        <StatTile label="Savings" value={fmt(savingsThisMonth)} icon={PiggyBank} tone="accent" className="col-span-2 sm:col-span-1" />
       </div>
 
       <div className="grid lg:grid-cols-[1.1fr_1fr] gap-4">
         <BudgetOverviewCard
           rows={budgetRows}
+          allCategories={categories}
           totalBudget={totalBudget}
           totalSpent={totalBudgetSpent}
           currency={settings.currency}
@@ -158,7 +165,7 @@ export default function OverviewPage() {
       {insights.hasPrevData && (insights.changes.length > 0 || insights.totalPct !== null) && (
         <Card>
           <h3 className="font-bold text-sm flex items-center gap-1.5 mb-3">
-            <Sparkles size={15} className="text-gold" /> What changed this month
+            <Sparkles size={15} className="text-[var(--accent-text)]" /> What changed this month
           </h3>
           <ul className="space-y-1.5 text-sm">
             {insights.totalPct !== null && Math.abs(insights.totalPct) >= 10 && (
@@ -226,8 +233,8 @@ export default function OverviewPage() {
         </Card>
       )}
 
-      <h2 className="font-bold text-lg flex items-center gap-1.5">
-        <PieChart size={18} className="text-plum" /> This month's category breakdown
+      <h2 className="font-bold text-lg flex items-center gap-1.5 text-[var(--shell-text)]">
+        <PieChart size={18} className="text-[var(--accent)]" /> This month's category breakdown
       </h2>
       {byCategory.length === 0 ? (
         <Card>
@@ -241,6 +248,7 @@ export default function OverviewPage() {
             <CategoryTile
               key={category.id}
               category={category}
+              index={categoryIndex(categories, category.id)}
               amount={total}
               pct={totalExpenses > 0 ? (total / totalExpenses) * 100 : 0}
               barPct={(total / maxTotal) * 100}

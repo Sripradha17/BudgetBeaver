@@ -98,27 +98,27 @@ export default function IncomePage() {
       />
 
       <div className="grid grid-cols-3 gap-3">
-        <IncomeStatCard label={settings.myLabel} value={fmt(totals.mine)} icon={Wallet} tone="teal" />
-        <IncomeStatCard label={settings.spouseLabel} value={fmt(totals.spouse)} icon={Wallet} tone="teal" />
-        <IncomeStatCard label="Combined" value={fmt(totals.combined)} icon={Users} tone="plum" />
+        <IncomeStatCard label={settings.myLabel} value={fmt(totals.mine)} icon={Wallet} />
+        <IncomeStatCard label={settings.spouseLabel} value={fmt(totals.spouse)} icon={Wallet} />
+        <IncomeStatCard label="Combined" value={fmt(totals.combined)} icon={Users} />
       </div>
 
       <Card>
         <h2 className="font-bold text-lg mb-3 flex items-center gap-1.5">
-          <PiggyBank size={18} className="text-teal" /> Log income
+          <PiggyBank size={18} className="text-[var(--accent-text)]" /> Log income
         </h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-5 gap-3">
           <input
             type="date"
             value={form.date}
             onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
             required
           />
           <select
             value={form.person}
             onChange={(e) => setForm((f) => ({ ...f, person: e.target.value }))}
-            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
           >
             <option value="mine">{settings.myLabel}</option>
             <option value="spouse">{settings.spouseLabel}</option>
@@ -130,7 +130,7 @@ export default function IncomePage() {
             placeholder={`Amount (${settings.currency})`}
             value={form.amount}
             onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
             required
           />
           <input
@@ -138,12 +138,12 @@ export default function IncomePage() {
             placeholder="Note (optional)"
             value={form.note}
             onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
-            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+            className="rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
           />
           <button
             type="submit"
             disabled={submitting}
-            className="flex items-center justify-center gap-1.5 rounded-lg bg-teal text-white font-medium px-3 py-2 text-sm hover:bg-teal/90 disabled:opacity-50"
+            className="flex items-center justify-center gap-1.5 rounded-lg bg-[var(--accent)] text-white font-medium px-3 py-2 text-sm hover:bg-[var(--accent-hover)] disabled:opacity-50"
           >
             <Plus size={16} /> Add
           </button>
@@ -151,7 +151,8 @@ export default function IncomePage() {
       </Card>
 
       {/* Same hero language, second time on the page — a quieter inspirational
-          break rather than another data card. */}
+          break rather than another data card. Both hero photos share the
+          page's one teal accent/background now, same as every other page. */}
       <PageHero
         tint="forest"
         title="A healthier you, a brighter tomorrow"
@@ -172,9 +173,9 @@ export default function IncomePage() {
                 key={i._id}
                 className="relative flex items-center justify-between py-2.5 gap-3 pl-4 pr-3 hover:bg-mist/40 transition-colors duration-150 group"
               >
-                <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-teal/70" />
+                <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-[var(--accent)]" />
                 <div className="min-w-0 flex items-center gap-2.5">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-teal/15 text-teal shrink-0">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[var(--tile-bg)] text-[var(--accent-text)] shrink-0">
                     <Wallet size={14} />
                   </div>
                   <div className="min-w-0">
@@ -191,7 +192,7 @@ export default function IncomePage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="font-display font-bold text-sm tabular-nums text-teal">
+                  <span className="font-display font-bold text-sm tabular-nums text-[var(--accent-text)]">
                     +{fmt(i.amount)}
                   </span>
                   <button
@@ -215,18 +216,21 @@ export default function IncomePage() {
   );
 }
 
-function IncomeStatCard({ label, value, icon: Icon, tone }) {
-  const toneClasses = {
-    teal: { bg: "bg-teal/[0.07]", border: "border-teal/20", text: "text-teal", chip: "bg-teal/15" },
-    plum: { bg: "bg-plum/[0.07]", border: "border-plum/20", text: "text-plum", chip: "bg-plum/15" },
-  }[tone];
+function IncomeStatCard({ label, value, icon: Icon }) {
   return (
-    <Card className={`${toneClasses.bg} border ${toneClasses.border} text-center`}>
-      <div className={`mx-auto mb-1.5 flex items-center justify-center w-8 h-8 rounded-full ${toneClasses.chip} ${toneClasses.text}`}>
+    <Card className="border text-center" style={{ backgroundColor: "var(--tile-bg)", borderColor: "var(--tile-border)" }}>
+      <div
+        className="mx-auto mb-1.5 flex items-center justify-center w-8 h-8 rounded-full"
+        style={{ backgroundColor: "var(--accent)", color: "#fff" }}
+      >
         <Icon size={15} />
       </div>
       <p className="text-[11px] text-ink/50 uppercase tracking-wide truncate">{label}</p>
-      <p key={value} className={`font-display font-bold text-lg tabular-nums animate-page-in ${toneClasses.text}`}>
+      <p
+        key={value}
+        className="font-display font-bold text-lg tabular-nums animate-page-in"
+        style={{ color: "var(--accent-text)" }}
+      >
         {value}
       </p>
     </Card>

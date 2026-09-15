@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { api } from "../lib/api.js";
 import aboutIntroGif from "../assets/illustrations/about_page.gif";
+import { pageTheme, themeVars } from "../theme/pageTheme.js";
 
 export default function LoginPage({ onLoggedIn }) {
   const [mode, setMode] = useState("login"); // "login" | "signup"
+  // Sign in/up each get their own accent, sampled from the intro gif's two
+  // dominant colors (its raccoon green, and its coin gold) instead of one
+  // fixed brand color — so the tab you're on tints the whole page.
+  const theme = mode === "login" ? pageTheme.loginSignIn : pageTheme.loginSignUp;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -28,16 +33,23 @@ export default function LoginPage({ onLoggedIn }) {
   }
 
   return (
-    <div className="min-h-screen overflow-y-auto px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
+    <div
+      className="min-h-screen overflow-y-auto px-4 py-4 transition-[background] duration-300 sm:px-6 sm:py-5 lg:px-8"
+      style={{
+        ...themeVars(theme),
+        background:
+          "radial-gradient(1100px 620px at 50% 0%, color-mix(in srgb, var(--accent) 30%, var(--page-wash)) 0%, var(--page-wash) 55%, var(--page-wash) 100%)",
+      }}
+    >
       <div className="mx-auto grid w-full max-w-6xl items-center gap-5 py-4 md:grid-cols-[minmax(0,0.95fr)_minmax(19rem,23rem)] lg:min-h-[calc(100vh-2.5rem)] lg:gap-8 lg:py-0">
         <div className="flex min-w-0 flex-col items-center gap-4 text-center md:items-start md:text-left lg:gap-5">
           <div className="inline-flex items-center gap-3 rounded-full border border-white/70 bg-white/72 px-4 py-2 shadow-[0_18px_40px_-28px_rgba(90,76,118,0.45)] backdrop-blur">
-            <span className="h-2.5 w-2.5 rounded-full bg-coral shadow-[0_0_0_7px_rgba(255,154,118,0.18)]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent)] shadow-[0_0_0_7px_color-mix(in_srgb,var(--accent)_18%,transparent)]" />
             <div>
               <span className="block font-display text-[1.18rem] font-extrabold leading-none text-ink sm:text-[1.35rem]">
                 Budget Raccoon
               </span>
-              <span className="block text-[10px] font-extrabold uppercase tracking-[0.24em] text-coral/80">
+              <span className="block text-[10px] font-extrabold uppercase tracking-[0.24em] text-[var(--accent-text)]">
                 Personal finance
               </span>
             </div>
@@ -64,23 +76,23 @@ export default function LoginPage({ onLoggedIn }) {
           onSubmit={handleSubmit}
           className="relative w-full max-w-md justify-self-center overflow-hidden rounded-[1.9rem] border border-white/80 bg-[linear-gradient(180deg,rgba(255,252,249,0.97),rgba(255,244,250,0.98))] p-4 shadow-[0_30px_80px_-42px_rgba(67,54,87,0.45)] sm:p-5 md:justify-self-end"
         >
-          <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-coral/15 blur-2xl" />
-          <div className="pointer-events-none absolute inset-x-10 bottom-0 h-20 rounded-full bg-[#c9dfff]/30 blur-3xl" />
+          <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] blur-2xl" />
+          <div className="pointer-events-none absolute inset-x-10 bottom-0 h-20 rounded-full bg-[color-mix(in_srgb,var(--accent)_20%,transparent)] blur-3xl" />
           <div className="relative mb-4 flex items-start justify-between gap-3">
             <div>
               <p className="text-[10px] font-extrabold uppercase tracking-[0.22em] text-ink/45">Welcome back</p>
               <h2 className="mt-1 text-[1.35rem] leading-none text-ink sm:text-[1.55rem]">Sign in</h2>
               <p className="mt-1.5 text-[12px] leading-5 text-ink/55 sm:text-[13px]">Your monthly summary, categories, and goals in one place.</p>
             </div>
-            <div className="h-12 w-12 rounded-[1rem] bg-[linear-gradient(135deg,rgba(255,183,198,0.95),rgba(189,219,255,0.95))] shadow-[0_18px_28px_-22px_rgba(0,0,0,0.8)] sm:h-14 sm:w-14" />
+            <div className="h-12 w-12 rounded-[1rem] bg-[linear-gradient(135deg,var(--accent),var(--accent-hover))] shadow-[0_18px_28px_-22px_rgba(0,0,0,0.8)] sm:h-14 sm:w-14" />
           </div>
 
           <div className="mb-4 grid grid-cols-2 gap-2.5 rounded-[1.35rem] bg-white/72 p-2.5 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] sm:gap-3 sm:p-3">
-            <div className="rounded-[1.1rem] bg-[#fff5dc] px-3 py-2.5">
+            <div className="rounded-[1.1rem] px-3 py-2.5" style={{ backgroundColor: "var(--tile-bg)" }}>
               <p className="text-[11px] font-extrabold uppercase tracking-[0.22em] text-ink/45">This week</p>
               <p className="mt-1 text-xl font-extrabold text-ink sm:text-2xl">$186</p>
             </div>
-            <div className="rounded-[1.1rem] bg-[#e8f8f1] px-3 py-2.5">
+            <div className="rounded-[1.1rem] px-3 py-2.5" style={{ backgroundColor: "var(--tile-bg)" }}>
               <p className="text-[11px] font-extrabold uppercase tracking-[0.22em] text-ink/45">Savings</p>
               <p className="mt-1 text-xl font-extrabold text-ink sm:text-2xl">+12%</p>
             </div>
@@ -94,7 +106,7 @@ export default function LoginPage({ onLoggedIn }) {
                 setError(null);
               }}
               className={`flex-1 rounded-md py-1.5 font-medium transition ${
-                mode === "login" ? "bg-coral text-white shadow-[0_10px_24px_-18px_rgba(0,0,0,0.9)]" : "text-ink/60"
+                mode === "login" ? "bg-[var(--accent)] text-white shadow-[0_10px_24px_-18px_rgba(0,0,0,0.9)]" : "text-ink/60"
               }`}
             >
               Log in
@@ -106,7 +118,7 @@ export default function LoginPage({ onLoggedIn }) {
                 setError(null);
               }}
               className={`flex-1 rounded-md py-1.5 font-medium transition ${
-                mode === "signup" ? "bg-coral text-white shadow-[0_10px_24px_-18px_rgba(0,0,0,0.9)]" : "text-ink/60"
+                mode === "signup" ? "bg-[var(--accent)] text-white shadow-[0_10px_24px_-18px_rgba(0,0,0,0.9)]" : "text-ink/60"
               }`}
             >
               Sign up
@@ -122,7 +134,7 @@ export default function LoginPage({ onLoggedIn }) {
               autoFocus
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-2xl border border-white/80 px-4 py-2.5 text-[13px] focus:outline-coral sm:text-sm sm:py-2.5"
+              className="w-full rounded-2xl border border-white/80 px-4 py-2.5 text-[13px] focus:outline-[var(--accent-ring)] sm:text-sm sm:py-2.5"
               placeholder="you@example.com"
               required
             />
@@ -135,7 +147,7 @@ export default function LoginPage({ onLoggedIn }) {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-2xl border border-white/80 px-4 py-2.5 text-[13px] focus:outline-coral sm:text-sm sm:py-2.5"
+              className="w-full rounded-2xl border border-white/80 px-4 py-2.5 text-[13px] focus:outline-[var(--accent-ring)] sm:text-sm sm:py-2.5"
               placeholder="At least 6 characters"
               required
               minLength={mode === "signup" ? 6 : undefined}
@@ -151,7 +163,7 @@ export default function LoginPage({ onLoggedIn }) {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-4 w-full rounded-[1.2rem] bg-[linear-gradient(90deg,#ff8e70,#ffb65e)] px-4 py-2.5 text-[13px] font-extrabold uppercase tracking-[0.18em] text-white shadow-[0_18px_28px_-20px_rgba(255,142,112,0.7)] hover:opacity-95 disabled:opacity-50 sm:text-sm"
+            className="mt-4 w-full rounded-[1.2rem] bg-[linear-gradient(90deg,var(--accent),var(--accent-hover))] px-4 py-2.5 text-[13px] font-extrabold uppercase tracking-[0.18em] text-white shadow-[0_18px_28px_-20px_color-mix(in_srgb,var(--accent)_70%,transparent)] hover:opacity-95 disabled:opacity-50 sm:text-sm"
           >
             {submitting ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
           </button>

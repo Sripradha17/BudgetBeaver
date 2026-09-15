@@ -254,7 +254,7 @@ export default function ImportExpenses({ onClose }) {
           )}
 
           {!showingReview && !parsed && (
-            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-mist rounded-xl py-12 cursor-pointer hover:border-coral transition">
+            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-mist rounded-xl py-12 cursor-pointer hover:border-[var(--accent)] transition">
               <Upload size={28} className="text-ink/40" />
               <span className="text-sm text-ink/60">
                 Click to choose an .xlsx, .xls, or .csv file
@@ -361,7 +361,7 @@ export default function ImportExpenses({ onClose }) {
                   importing ||
                   (includedExpenseCount === 0 && includedIncomeCount === 0 && includedBudgetCount === 0)
                 }
-                className="rounded-lg bg-coral text-white text-sm font-medium px-4 py-2 hover:bg-coral/90 disabled:opacity-50"
+                className="rounded-lg bg-[var(--accent)] text-white text-sm font-medium px-4 py-2 hover:bg-[var(--accent-hover)] disabled:opacity-50"
               >
                 {importing ? "Importing…" : "Import"}
               </button>
@@ -374,7 +374,7 @@ export default function ImportExpenses({ onClose }) {
             <span className="text-sm text-ink/60">{importedExpenses.length} expenses imported</span>
             <button
               onClick={onClose}
-              className="rounded-lg bg-coral text-white text-sm font-medium px-4 py-2 hover:bg-coral/90"
+              className="rounded-lg bg-[var(--accent)] text-white text-sm font-medium px-4 py-2 hover:bg-[var(--accent-hover)]"
             >
               Done
             </button>
@@ -773,7 +773,7 @@ function ImportedExpensesReview({
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => saveEdit(e._id)}
-                      className="rounded bg-teal text-white p-1 hover:bg-teal/90"
+                      className="rounded bg-[var(--accent)] text-white p-1 hover:bg-[var(--accent-hover)]"
                       aria-label="Save"
                     >
                       <Check size={13} />

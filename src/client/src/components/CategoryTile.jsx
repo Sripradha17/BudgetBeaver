@@ -1,4 +1,6 @@
-export default function CategoryTile({ category, amount, pct, barPct, currency, className = "", ...rest }) {
+import { shadeCss, shadeWashCss } from "../lib/shades.js";
+
+export default function CategoryTile({ category, index = 0, amount, pct, barPct, currency, className = "", ...rest }) {
   const Icon = category.icon;
   return (
     <div
@@ -8,7 +10,7 @@ export default function CategoryTile({ category, amount, pct, barPct, currency, 
       <div className="flex items-center gap-2.5">
         <div
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-          style={{ backgroundColor: `${category.badgeColor}22`, color: category.badgeColor }}
+          style={{ backgroundColor: shadeWashCss(index), color: shadeCss(index) }}
         >
           <Icon size={16} />
         </div>
@@ -24,7 +26,7 @@ export default function CategoryTile({ category, amount, pct, barPct, currency, 
       <div className="mt-2 h-2 rounded-full bg-mist overflow-hidden">
         <div
           className="h-full rounded-full transition-[width] duration-700 ease-out"
-          style={{ width: `${barPct}%`, backgroundColor: category.badgeColor }}
+          style={{ width: `${barPct}%`, backgroundColor: shadeCss(index) }}
         />
       </div>
     </div>

@@ -31,7 +31,7 @@ export default function MoreSheet({ onClose, onLogout }) {
               onClick={onClose}
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium ${
-                  isActive ? "bg-forest text-white" : "text-ink/75 hover:bg-sage-light"
+                  isActive ? "bg-[var(--accent)] text-white" : "text-ink/75 hover:bg-[var(--tile-bg)]"
                 }`
               }
             >

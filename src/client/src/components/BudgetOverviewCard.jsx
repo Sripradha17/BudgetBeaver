@@ -1,15 +1,18 @@
 import { Target } from "lucide-react";
 import Card from "./Card.jsx";
+import { categoryIndex } from "../lib/categories.js";
+import { shadeCss } from "../lib/shades.js";
 
-export default function BudgetOverviewCard({ rows, totalBudget, totalSpent, currency, className = "" }) {
+export default function BudgetOverviewCard({ rows, allCategories, totalBudget, totalSpent, currency, className = "" }) {
   const overallPct = totalBudget > 0 ? Math.min(100, (totalSpent / totalBudget) * 100) : 0;
   const fmt = (n) => `${currency}${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+  const overallColor = overallPct >= 100 ? shadeCss(3) : overallPct >= 80 ? shadeCss(2) : shadeCss(4);
 
   return (
     <Card className={className}>
       <div className="flex items-center justify-between mb-1">
         <h3 className="font-bold text-sm flex items-center gap-1.5">
-          <Target size={15} className="text-forest" /> Monthly budget
+          <Target size={15} className="text-[var(--accent-text)]" /> Monthly budget
         </h3>
         <span className="text-xs font-bold text-ink/50">{overallPct.toFixed(0)}% used</span>
       </div>
@@ -25,10 +28,8 @@ export default function BudgetOverviewCard({ rows, totalBudget, totalSpent, curr
           </p>
           <div className="mt-2.5 h-3 rounded-full bg-mist overflow-hidden">
             <div
-              className={`h-full rounded-full transition-[width] duration-700 ease-out ${
-                overallPct >= 100 ? "bg-coral" : overallPct >= 80 ? "bg-gold" : "bg-forest"
-              }`}
-              style={{ width: `${overallPct}%` }}
+              className="h-full rounded-full transition-[width] duration-700 ease-out"
+              style={{ width: `${overallPct}%`, backgroundColor: overallColor }}
             />
           </div>
 
@@ -36,11 +37,12 @@ export default function BudgetOverviewCard({ rows, totalBudget, totalSpent, curr
             {rows.slice(0, 4).map((r) => {
               const pct = r.budget > 0 ? Math.min(100, (r.spent / r.budget) * 100) : 0;
               const Icon = r.category.icon;
+              const idx = categoryIndex(allCategories, r.category.id);
               return (
                 <li key={r.category.id}>
                   <div className="flex items-center justify-between mb-1 text-xs">
                     <span className="flex items-center gap-1.5 font-semibold text-ink/75">
-                      <Icon size={12} style={{ color: r.category.badgeColor }} />
+                      <Icon size={12} style={{ color: shadeCss(idx) }} />
                       {r.category.label}
                     </span>
                     <span className="text-ink/45 tabular-nums">
@@ -52,7 +54,7 @@ export default function BudgetOverviewCard({ rows, totalBudget, totalSpent, curr
                       className="h-full rounded-full transition-[width] duration-700 ease-out"
                       style={{
                         width: `${pct}%`,
-                        backgroundColor: pct >= 100 ? "#ff9a76" : r.category.badgeColor,
+                        backgroundColor: pct >= 100 ? shadeCss(3) : shadeCss(idx),
                       }}
                     />
                   </div>

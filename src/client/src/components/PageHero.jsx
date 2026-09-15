@@ -8,25 +8,6 @@
 // meets the text; the panel's own color is sampled from the photo itself
 // (its own edge pixels — see illustrationEdgeColor), not a generic brand
 // hue, so the seam is an actual color match rather than just an alpha fade.
-function hexToRgb(hex) {
-  const v = hex.replace("#", "");
-  return [parseInt(v.slice(0, 2), 16), parseInt(v.slice(2, 4), 16), parseInt(v.slice(4, 6), 16)];
-}
-function mixHex(hexA, hexB, t) {
-  const a = hexToRgb(hexA);
-  const b = hexToRgb(hexB);
-  const c = a.map((v, i) => Math.round(v + (b[i] - v) * t));
-  return `#${c.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
-}
-
-const TINT_DARK = {
-  forest: "#173a2d",
-  coral: "#4a281c",
-  gold: "#4a3611",
-  teal: "#16333d",
-  plum: "#2e2447",
-};
-
 const TINTS = {
   forest: "bg-forest",
   coral: "bg-coral",
@@ -51,9 +32,13 @@ export default function PageHero({
   children,
   heroHeight = 420,
 }) {
-  const dark = TINT_DARK[tint];
-  const gradH = `linear-gradient(to right, ${dark} 0%, ${mixHex(dark, edgeColor.left, 0.55)} 62%, ${edgeColor.left} 100%)`;
-  const gradV = `linear-gradient(to bottom, ${dark} 0%, ${mixHex(dark, edgeColor.top, 0.55)} 58%, ${edgeColor.top} 100%)`;
+  // The far corner (away from the photo) is a dark shade of the current
+  // page's own hue (--hero-corner) rather than a fixed per-tint color, so it
+  // matches the page's color identity — but stays dark regardless of how
+  // light that page's own background is, since the eyebrow/title/description
+  // text here is always light and needs a dark panel to read against.
+  const gradH = `linear-gradient(to right, var(--hero-corner) 0%, color-mix(in srgb, var(--hero-corner) 45%, ${edgeColor.left}) 62%, ${edgeColor.left} 100%)`;
+  const gradV = `linear-gradient(to bottom, var(--hero-corner) 0%, color-mix(in srgb, var(--hero-corner) 42%, ${edgeColor.top}) 58%, ${edgeColor.top} 100%)`;
 
   return (
     <div

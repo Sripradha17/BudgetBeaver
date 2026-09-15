@@ -265,13 +265,13 @@ export default function ExpensesPage() {
       />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <StatTile label="Income" value={fmt(totals.income)} icon={TrendingUp} tone="sky" />
-        <StatTile label="Expenses" value={fmt(totals.expenses)} icon={TrendingDown} tone="coral" />
+        <StatTile label="Income" value={fmt(totals.income)} icon={TrendingUp} tone="accent" />
+        <StatTile label="Expenses" value={fmt(totals.expenses)} icon={TrendingDown} tone="accent" />
         <StatTile
           label="Difference"
           value={`${totals.diff < 0 ? "-" : ""}${fmt(Math.abs(totals.diff))}`}
           icon={Scale}
-          tone={totals.diff < 0 ? "coral" : "forest"}
+          tone="accent"
           className="col-span-2 sm:col-span-1"
         />
       </div>
@@ -280,7 +280,7 @@ export default function ExpensesPage() {
         <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
           <div>
             <h2 className="font-bold text-lg flex items-center gap-1.5">
-              <Wallet size={18} className="text-coral" /> What did you spend?
+              <Wallet size={18} className="text-[var(--accent-text)]" /> What did you spend?
             </h2>
             <p className="text-xs text-ink/45 mt-0.5">Pick a category, enter the amount, done.</p>
           </div>
@@ -296,7 +296,7 @@ export default function ExpensesPage() {
             )}
             <button
               onClick={() => setShowImport(true)}
-              className="flex items-center gap-1.5 rounded-lg bg-plum text-white text-sm font-medium px-3 py-2 hover:bg-plum/90"
+              className="flex items-center gap-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium px-3 py-2 hover:bg-[var(--accent-hover)]"
             >
               <Upload size={15} /> Import from Excel/CSV
             </button>
@@ -308,7 +308,7 @@ export default function ExpensesPage() {
               <span className="mb-1.5 block text-[11px] font-extrabold uppercase tracking-[0.16em] text-ink/45">
                 Amount
               </span>
-              <div className="flex items-center gap-2 rounded-2xl border-2 border-mist bg-white/85 px-4 py-2 focus-within:border-coral transition-colors">
+              <div className="flex items-center gap-2 rounded-2xl border-2 border-mist bg-white/85 px-4 py-2 focus-within:border-[var(--accent)] transition-colors">
                 <span className="text-2xl font-display font-extrabold text-ink/25">{settings.currency}</span>
                 <input
                   type="number"
@@ -330,7 +330,7 @@ export default function ExpensesPage() {
                 type="date"
                 value={form.date}
                 onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-                className="h-[54px] w-full rounded-2xl border-2 border-mist bg-white/85 px-4 text-sm focus:border-coral focus:outline-none"
+                className="h-[54px] w-full rounded-2xl border-2 border-mist bg-white/85 px-4 text-sm focus:border-[var(--accent)] focus:outline-none"
                 required
               />
             </label>
@@ -357,7 +357,7 @@ export default function ExpensesPage() {
                 placeholder="What was it for? (optional)"
                 value={form.note}
                 onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
-                className="w-full rounded-2xl border-2 border-mist bg-white/85 px-4 py-2.5 text-sm focus:border-coral focus:outline-none"
+                className="w-full rounded-2xl border-2 border-mist bg-white/85 px-4 py-2.5 text-sm focus:border-[var(--accent)] focus:outline-none"
               />
             </label>
             <label className="block">
@@ -367,7 +367,7 @@ export default function ExpensesPage() {
               <select
                 value={form.person}
                 onChange={(e) => setForm((f) => ({ ...f, person: e.target.value }))}
-                className="h-[46px] w-full rounded-2xl border-2 border-mist bg-white/85 px-4 text-sm focus:border-coral focus:outline-none"
+                className="h-[46px] w-full rounded-2xl border-2 border-mist bg-white/85 px-4 text-sm focus:border-[var(--accent)] focus:outline-none"
               >
                 <option value="mine">{settings.myLabel}</option>
                 <option value="spouse">{settings.spouseLabel}</option>
@@ -411,7 +411,7 @@ export default function ExpensesPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="flex w-full items-center justify-center gap-1.5 rounded-2xl bg-[linear-gradient(90deg,#ff8e70,#ffb65e)] px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white shadow-[0_18px_28px_-20px_rgba(255,142,112,0.7)] hover:opacity-95 disabled:opacity-50 sm:w-auto"
+            className="flex w-full items-center justify-center gap-1.5 rounded-2xl bg-[linear-gradient(90deg,var(--accent),var(--accent-hover))] px-6 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white shadow-[0_18px_28px_-20px_color-mix(in_srgb,var(--accent)_70%,transparent)] hover:opacity-95 disabled:opacity-50 sm:w-auto"
           >
             <Plus size={16} /> {submitting ? "Adding…" : "Add expense"}
           </button>
@@ -419,9 +419,9 @@ export default function ExpensesPage() {
       </Card>
 
       {missingRecurring.length > 0 && (
-        <Card className="border-teal/40 bg-teal/5">
+        <Card className="border-[color-mix(in_srgb,var(--accent)_40%,transparent)]" style={{ backgroundColor: "var(--tile-bg)" }}>
           <div className="flex items-start gap-3">
-            <Repeat size={18} className="text-teal shrink-0 mt-0.5" />
+            <Repeat size={18} className="text-[var(--accent-text)] shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-ink">
                 {missingRecurring.length} recurring transaction{missingRecurring.length !== 1 ? "s" : ""} look
@@ -434,7 +434,7 @@ export default function ExpensesPage() {
                 <button
                   onClick={handleAddAllRecurring}
                   disabled={addingRecurring}
-                  className="rounded-lg bg-teal text-white text-xs font-medium px-3 py-1.5 hover:bg-teal/90 disabled:opacity-50"
+                  className="rounded-lg bg-[var(--accent)] text-white text-xs font-medium px-3 py-1.5 hover:bg-[var(--accent-hover)] disabled:opacity-50"
                 >
                   {addingRecurring ? "Adding…" : `Add all ${missingRecurring.length}`}
                 </button>
@@ -462,7 +462,7 @@ export default function ExpensesPage() {
                 placeholder="Search notes…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-lg border border-mist pl-8 pr-3 py-1.5 text-sm focus:outline-coral"
+                className="w-full rounded-lg border border-mist pl-8 pr-3 py-1.5 text-sm focus:outline-[var(--accent-ring)]"
               />
             </div>
             <div className="grid grid-cols-2 sm:flex gap-2">
@@ -628,7 +628,7 @@ function ExpenseRow({ expense: e, category, settings, showDate, onEdit, onDelete
         <p className="text-sm font-medium text-ink truncate flex items-center gap-1.5">
           {e.note || category?.label || "Expense"}
           {e.isRecurring && (
-            <Repeat size={11} className="text-teal shrink-0" aria-label="Recurring" />
+            <Repeat size={11} className="text-[var(--accent-text)] shrink-0" aria-label="Recurring" />
           )}
         </p>
         <p className="text-xs text-ink/50 truncate">
@@ -650,7 +650,7 @@ function ExpenseRow({ expense: e, category, settings, showDate, onEdit, onDelete
         </p>
       </div>
       <div className="flex items-center gap-2 shrink-0">
-        <span className="font-display font-bold text-sm tabular-nums text-coral">
+        <span className="font-display font-bold text-sm tabular-nums text-[var(--accent-text)]">
           −{settings.currency}
           {e.amount.toLocaleString(undefined, { maximumFractionDigits: 2 })}
         </span>
@@ -719,7 +719,7 @@ function EditRow({ editForm, setEditForm, categories, settings, onSave, onCancel
         <div className="col-span-2 sm:col-span-1 flex items-center gap-2">
           <button
             onClick={onSave}
-            className="flex items-center justify-center rounded bg-teal text-white p-1.5 hover:bg-teal/90"
+            className="flex items-center justify-center rounded bg-[var(--accent)] text-white p-1.5 hover:bg-[var(--accent-hover)]"
             aria-label="Save"
           >
             <Check size={14} />

@@ -29,6 +29,7 @@ import Card from "../components/Card.jsx";
 import PageHero from "../components/PageHero.jsx";
 import RecentActivity from "../components/RecentActivity.jsx";
 import { illustrations, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
+import { pageTheme } from "../theme/pageTheme.js";
 
 const QUICK_LINKS = [
   { to: "/overview", label: "Overview", icon: LayoutDashboard },
@@ -51,7 +52,7 @@ function CurrencyTooltip({ active, payload, label, currency }) {
   return (
     <div className="rounded-lg border border-mist bg-surface2 px-3 py-2 text-xs shadow-soft">
       <p className="mb-0.5 font-semibold text-ink">{label}</p>
-      <p className="text-coral">
+      <p className="text-[var(--accent-text)]">
         Spent: {currency}
         {payload[0].value.toLocaleString()}
       </p>
@@ -64,9 +65,12 @@ function GoalRing({ pct }) {
   return (
     <div
       className="relative h-12 w-12 shrink-0 rounded-full"
-      style={{ background: `conic-gradient(#2B5F47 ${clamped * 3.6}deg, #E4E4DA 0deg)` }}
+      style={{ background: `conic-gradient(var(--accent) ${clamped * 3.6}deg, #E4E4DA 0deg)` }}
     >
-      <div className="absolute inset-[3px] flex items-center justify-center rounded-full bg-surface text-[10px] font-extrabold text-forest">
+      <div
+        className="absolute inset-[3px] flex items-center justify-center rounded-full bg-surface text-[10px] font-extrabold"
+        style={{ color: "var(--accent-text)" }}
+      >
         {clamped.toFixed(0)}%
       </div>
     </div>
@@ -186,25 +190,25 @@ export default function HomePage() {
 
       {/* Stat tiles: balance, income, expenses, goal progress ring */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-        <div className="rounded-[1.6rem] border border-forest/25 bg-forest/[0.1] p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]">
+        <div className="rounded-[1.6rem] border p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]" style={{ backgroundColor: "var(--tile-bg)", borderColor: "var(--tile-border)" }}>
           <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-ink/50">Total balance</p>
-          <p className="mt-2 font-display text-lg font-extrabold tabular-nums text-forest sm:text-2xl">
+          <p className="mt-2 font-display text-lg font-extrabold tabular-nums sm:text-2xl" style={{ color: "var(--accent-text)" }}>
             {currentBalance < 0 ? "-" : ""}
             {fmt(currentBalance)}
           </p>
         </div>
-        <div className="rounded-[1.6rem] border border-sky/30 bg-sky/[0.14] p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]">
+        <div className="rounded-[1.6rem] border p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]" style={{ backgroundColor: "var(--tile-bg)", borderColor: "var(--tile-border)" }}>
           <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-ink/50">Monthly income</p>
-          <p className="mt-2 font-display text-lg font-extrabold tabular-nums text-[#2e6f96] sm:text-2xl">{fmt(totalIncome)}</p>
+          <p className="mt-2 font-display text-lg font-extrabold tabular-nums sm:text-2xl" style={{ color: "var(--accent-text)" }}>{fmt(totalIncome)}</p>
         </div>
-        <div className="rounded-[1.6rem] border border-coral/30 bg-coral/[0.12] p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]">
+        <div className="rounded-[1.6rem] border p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]" style={{ backgroundColor: "var(--tile-bg)", borderColor: "var(--tile-border)" }}>
           <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-ink/50">Monthly expenses</p>
-          <p className="mt-2 font-display text-lg font-extrabold tabular-nums text-[#c15a34] sm:text-2xl">{fmt(totalExpenses)}</p>
+          <p className="mt-2 font-display text-lg font-extrabold tabular-nums sm:text-2xl" style={{ color: "var(--accent-text)" }}>{fmt(totalExpenses)}</p>
         </div>
-        <div className="flex items-center gap-3 rounded-[1.6rem] border border-plum/30 bg-plum/[0.14] p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]">
+        <div className="flex items-center gap-3 rounded-[1.6rem] border p-4 shadow-[0_18px_36px_-28px_rgba(112,72,128,0.35)]" style={{ backgroundColor: "var(--tile-bg)", borderColor: "var(--tile-border)" }}>
           <div className="min-w-0">
             <p className="text-[11px] font-extrabold uppercase leading-tight tracking-[0.18em] text-ink/50">Savings goal</p>
-            <p className="mt-2 truncate font-display text-lg font-extrabold tabular-nums text-[#7c5bab] sm:text-xl">
+            <p className="mt-2 truncate font-display text-lg font-extrabold tabular-nums sm:text-xl" style={{ color: "var(--accent-text)" }}>
               {goalsSummary ? fmt(goalsSummary.progress) : "—"}
             </p>
           </div>
@@ -217,16 +221,19 @@ export default function HomePage() {
         <Card>
           <div className="mb-1 flex items-center justify-between">
             <h3 className="flex items-center gap-1.5 font-bold text-sm">
-              <TrendingDown size={15} className="text-coral" /> Spending overview
+              <TrendingDown size={15} className="text-[var(--accent-text)]" /> Spending overview
             </h3>
             <span className="text-xs text-ink/40">Last 6 months</span>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={trendData} margin={{ left: 0, right: 4, top: 12 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#eadcf3" vertical={false} />
-              <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#9b8ea3" }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CurrencyTooltip currency={settings.currency} />} cursor={{ fill: "rgba(215,127,108,0.06)" }} />
-              <Bar dataKey="expenses" name="Spent" fill="#D77F6C" radius={[8, 8, 0, 0]} maxBarSize={38} />
+              <CartesianGrid strokeDasharray="3 3" stroke={pageTheme.dashboard.cardBorder} vertical={false} />
+              <XAxis dataKey="label" tick={{ fontSize: 12, fill: pageTheme.dashboard.text }} axisLine={false} tickLine={false} />
+              <Tooltip
+                content={<CurrencyTooltip currency={settings.currency} />}
+                cursor={{ fill: pageTheme.dashboard.tileBg, opacity: 0.5 }}
+              />
+              <Bar dataKey="expenses" name="Spent" fill={pageTheme.dashboard.graphColor} radius={[8, 8, 0, 0]} maxBarSize={38} />
             </BarChart>
           </ResponsiveContainer>
         </Card>
@@ -234,15 +241,17 @@ export default function HomePage() {
         <RecentActivity items={recentActivity} currency={settings.currency} />
       </div>
 
-      {/* Compact secondary nav row — varies the page rhythm instead of another card grid */}
-      <div>
-        <h2 className="mb-3 font-display text-base font-bold text-ink">Jump to</h2>
+      {/* Compact secondary nav row — varies the page rhythm instead of another card grid.
+          Sidebar already gives full nav access on laptop+ widths, so this is mobile/tablet-only. */}
+      <div className="lg:hidden">
+        <h2 className="mb-3 font-display text-base font-bold text-[var(--shell-text)]">Jump to</h2>
         <div className="scroll-fade-x flex gap-2.5 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-6">
           {QUICK_LINKS.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}
               to={to}
-              className="flex shrink-0 items-center gap-2 rounded-full border border-mist bg-surface px-4 py-2.5 text-sm font-semibold text-ink/70 transition-colors hover:border-forest/30 hover:bg-sage-light hover:text-forest sm:shrink sm:justify-center"
+              className="flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold text-ink/70 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_30%,transparent)] hover:bg-[var(--tile-bg)] hover:text-[var(--accent-text)] sm:shrink sm:justify-center"
+              style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
             >
               <Icon size={15} className="text-ink/40" />
               {label}

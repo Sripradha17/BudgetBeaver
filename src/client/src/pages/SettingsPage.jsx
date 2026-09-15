@@ -101,7 +101,7 @@ export default function SettingsPage({ onLogout }) {
   return (
     <div className="space-y-5">
       <PageHero
-        tint="plum"
+        tint="teal"
         eyebrow="Settings"
         title="Small changes, big control"
         description="Fine-tune currency, categories, and reminders — make Budget Raccoon fit exactly how you manage money."
@@ -113,7 +113,7 @@ export default function SettingsPage({ onLogout }) {
       {userEmail && (
         <Card>
           <h2 className="font-bold text-lg mb-2 flex items-center gap-1.5">
-            <Mail size={17} className="text-plum" /> Account
+            <Mail size={17} className="text-[var(--accent-text)]" /> Account
           </h2>
           <p className="text-sm text-ink/70">
             Signed in as <span className="font-medium text-ink">{userEmail}</span>
@@ -133,7 +133,7 @@ export default function SettingsPage({ onLogout }) {
             <input
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+              className="mt-1 w-full rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
             />
           </label>
           <label className="text-sm">
@@ -141,7 +141,7 @@ export default function SettingsPage({ onLogout }) {
             <select
               value={baseCurrencyCode}
               onChange={(e) => setBaseCurrencyCode(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+              className="mt-1 w-full rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
             >
               {CURRENCIES.map((c) => (
                 <option key={c} value={c}>
@@ -155,7 +155,7 @@ export default function SettingsPage({ onLogout }) {
             <input
               value={myLabel}
               onChange={(e) => setMyLabel(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+              className="mt-1 w-full rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
             />
           </label>
           <label className="text-sm">
@@ -163,7 +163,7 @@ export default function SettingsPage({ onLogout }) {
             <input
               value={spouseLabel}
               onChange={(e) => setSpouseLabel(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+              className="mt-1 w-full rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
             />
           </label>
           <p className="sm:col-span-4 text-xs text-ink/50 -mt-1">
@@ -173,7 +173,7 @@ export default function SettingsPage({ onLogout }) {
           <button
             type="submit"
             disabled={saving}
-            className="sm:col-span-4 justify-self-start rounded-lg bg-coral text-white text-sm font-medium px-4 py-2 hover:bg-coral/90 disabled:opacity-50"
+            className="sm:col-span-4 justify-self-start rounded-lg bg-[var(--accent)] text-white text-sm font-medium px-4 py-2 hover:bg-[var(--accent-hover)] disabled:opacity-50"
           >
             Save
           </button>
@@ -183,9 +183,9 @@ export default function SettingsPage({ onLogout }) {
       <Card>
         <h2 className="font-bold text-lg mb-3">Categories</h2>
         <div className="flex flex-wrap gap-2 mb-4">
-          {categories.map((c) => (
+          {categories.map((c, idx) => (
             <div key={c.id} className="flex items-center gap-1">
-              <CategoryBadge category={c} />
+              <CategoryBadge category={c} index={idx} />
               {c.isCustom && (
                 <button
                   onClick={() => removeCategory(c.id)}
@@ -206,7 +206,7 @@ export default function SettingsPage({ onLogout }) {
             placeholder="New category name"
             value={newCategoryName}
             onChange={(e) => setNewCategoryName(e.target.value)}
-            className="flex-1 min-w-[140px] rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+            className="flex-1 min-w-[140px] rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
           />
           <input
             type="number"
@@ -215,11 +215,11 @@ export default function SettingsPage({ onLogout }) {
             placeholder={`Budget (${settings.currency}, optional)`}
             value={newCategoryBudget}
             onChange={(e) => setNewCategoryBudget(e.target.value)}
-            className="w-40 rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+            className="w-40 rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
           />
           <button
             type="submit"
-            className="shrink-0 flex items-center gap-1.5 rounded-lg bg-teal text-white text-sm font-medium px-3 py-2 hover:bg-teal/90"
+            className="shrink-0 flex items-center gap-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium px-3 py-2 hover:bg-[var(--accent-hover)]"
           >
             <Plus size={16} /> Add
           </button>
@@ -228,7 +228,7 @@ export default function SettingsPage({ onLogout }) {
 
       <Card>
         <h2 className="font-bold text-lg mb-1 flex items-center gap-1.5">
-          {pushStatus === "enabled" ? <Bell size={17} className="text-teal" /> : <BellOff size={17} />}
+          {pushStatus === "enabled" ? <Bell size={17} className="text-[var(--accent-text)]" /> : <BellOff size={17} />}
           Bill reminders
         </h2>
         <p className="text-xs text-ink/50 mb-3">
@@ -249,7 +249,7 @@ export default function SettingsPage({ onLogout }) {
             className={`rounded-lg text-sm font-medium px-4 py-2 disabled:opacity-50 ${
               pushStatus === "enabled"
                 ? "border border-mist hover:bg-mist/40"
-                : "bg-teal text-white hover:bg-teal/90"
+                : "bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]"
             }`}
           >
             {pushBusy
@@ -264,7 +264,7 @@ export default function SettingsPage({ onLogout }) {
 
       <Card>
         <h2 className="font-bold text-lg mb-1 flex items-center gap-1.5">
-          <Download size={17} className="text-gold" /> Export your data
+          <Download size={17} className="text-[var(--accent-text)]" /> Export your data
         </h2>
         <p className="text-xs text-ink/50 mb-3">
           Download everything as CSV — for your own records, or to open in a spreadsheet.

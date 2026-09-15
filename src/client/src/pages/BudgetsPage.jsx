@@ -10,6 +10,8 @@ import PageHero from "../components/PageHero.jsx";
 import { illustrations, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 import { exportMonthToExcel } from "../lib/exportExcel.js";
 import { getEffectiveBudget, isOneTimeBudget } from "../lib/budgets.js";
+import { categoryIndex } from "../lib/categories.js";
+import { shadeCss } from "../lib/shades.js";
 
 const PAGE_SIZE = 10;
 
@@ -100,7 +102,7 @@ export default function BudgetsPage() {
       >
         <button
           onClick={handleExport}
-          className="flex w-fit items-center gap-1.5 rounded-full bg-white text-[#7a5a1e] text-sm font-bold px-4 py-2.5 hover:bg-white/90"
+          className="flex w-fit items-center gap-1.5 rounded-full bg-white text-[var(--accent-text)] text-sm font-bold px-4 py-2.5 hover:bg-white/90"
         >
           <Download size={16} /> Export to Excel
         </button>
@@ -114,7 +116,7 @@ export default function BudgetsPage() {
             <select
               value={pickerCategoryId}
               onChange={(e) => setPickerCategoryId(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+              className="mt-1 w-full rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
             >
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -135,7 +137,7 @@ export default function BudgetsPage() {
                 setPickerSaved(false);
               }}
               onKeyDown={(e) => e.key === "Enter" && handlePickerSave()}
-              className="mt-1 w-full rounded-lg border border-mist px-3 py-2 text-sm focus:outline-coral"
+              className="mt-1 w-full rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
             />
           </label>
           <label className="flex items-center gap-1.5 text-xs text-ink/60 pb-2.5">
@@ -152,21 +154,25 @@ export default function BudgetsPage() {
           <button
             onClick={handlePickerSave}
             disabled={pickerSaving || !pickerCategoryId}
-            className="flex items-center gap-1.5 rounded-lg bg-coral text-white text-sm font-medium px-4 py-2 hover:bg-coral/90 disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium px-4 py-2 hover:bg-[var(--accent-hover)] disabled:opacity-50"
           >
             {pickerSaved ? <Check size={15} /> : null}
             {pickerSaving ? "Saving…" : pickerSaved ? "Saved" : "Save"}
           </button>
         </div>
         {!pickerRecurring && (
-          <p className="text-xs text-amber-500 mt-2">
+          <p className="text-xs mt-2" style={{ color: "var(--accent-text)" }}>
             This will only apply to the currently viewed month ({key}) — other months keep the
             recurring amount.
           </p>
         )}
       </Card>
 
-      <ul className="rounded-xl border border-mist/70 divide-y divide-mist overflow-hidden">
+      <div
+        className="rounded-[1.75rem] shadow-soft border overflow-hidden"
+        style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
+      >
+        <ul className="divide-y divide-mist">
         {categories.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((c) => {
           const budget = getEffectiveBudget(settings, c.id, key);
           const oneTime = isOneTimeBudget(settings, c.id, key);
@@ -175,32 +181,37 @@ export default function BudgetsPage() {
 
           const atBudget = budget > 0 && Math.abs(spent - budget) < 0.005;
 
-          let barColor = "bg-teal";
+          // Severity now reads through shade intensity (darker = more urgent)
+          // rather than a different hue per status, since every colored
+          // element on a page renders as a shade of that page's one accent.
+          let barColor = shadeCss(4);
+          let overBudget = false;
           let statusText = "";
           if (budget === 0) {
             statusText = spent > 0 ? "No budget set for this category" : "";
           } else if (c.isFloorGoal) {
             if (atBudget) {
-              barColor = "bg-emerald-500";
+              barColor = shadeCss(5);
               statusText = "Right at goal";
             } else if (spent > budget) {
-              barColor = "bg-emerald-500";
+              barColor = shadeCss(5);
               statusText = `+${settings.currency}${(spent - budget).toLocaleString()} past goal`;
             } else {
-              barColor = "bg-gold";
+              barColor = shadeCss(4);
               statusText = `${settings.currency}${(budget - spent).toLocaleString()} to goal`;
             }
           } else if (atBudget) {
-            barColor = "bg-amber-500";
+            barColor = shadeCss(1);
             statusText = "Right at budget";
           } else if (pct > 100) {
-            barColor = "bg-red-500";
+            barColor = shadeCss(3);
+            overBudget = true;
             statusText = `${settings.currency}${(spent - budget).toLocaleString()} over budget`;
           } else if (pct >= 80) {
-            barColor = "bg-amber-500";
+            barColor = shadeCss(2);
             statusText = `${settings.currency}${(budget - spent).toLocaleString()} left`;
           } else {
-            barColor = "bg-teal";
+            barColor = shadeCss(4);
             statusText = `${settings.currency}${(budget - spent).toLocaleString()} left`;
           }
 
@@ -208,11 +219,13 @@ export default function BudgetsPage() {
             <BudgetCategoryRow
               key={c.id}
               category={c}
+              index={categoryIndex(categories, c.id)}
               budget={budget}
               oneTime={oneTime}
               spent={spent}
               pct={pct}
               barColor={barColor}
+              overBudget={overBudget}
               statusText={statusText}
               currency={settings.currency}
               isEditing={editingId === c.id}
@@ -226,8 +239,10 @@ export default function BudgetsPage() {
           );
         })}
       </ul>
-
-      <Pagination page={page} pageSize={PAGE_SIZE} total={categories.length} onPageChange={setPage} />
+      <div className="px-4">
+        <Pagination page={page} pageSize={PAGE_SIZE} total={categories.length} onPageChange={setPage} />
+      </div>
+      </div>
     </div>
   );
 }

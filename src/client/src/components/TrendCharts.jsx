@@ -11,16 +11,30 @@ import {
   Legend,
 } from "recharts";
 import Card from "./Card.jsx";
+import { pageTheme } from "../theme/pageTheme.js";
 
+// This chart only ever renders on the Reports page, so its four series get
+// literal same-hue shades of that page's accent (mixed in plain JS, since
+// recharts needs real color values, not CSS custom properties) instead of
+// four unrelated hues.
+function mixHex(hexA, hexB, t) {
+  const toRgb = (h) => [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const a = toRgb(hexA.replace("#", ""));
+  const b = toRgb(hexB.replace("#", ""));
+  const c = a.map((v, i) => Math.round(v + (b[i] - v) * t));
+  return `#${c.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+}
+
+const ACCENT = pageTheme.reports.accent;
 const COLORS = {
-  income: "#6fb3e6",
-  expenses: "#ff9a76",
-  savings: "#f8ca63",
-  investment: "#c292ff",
+  income: mixHex(ACCENT, "#ffffff", 0.5),
+  expenses: mixHex(ACCENT, "#000000", 0.3),
+  savings: mixHex(ACCENT, "#ffffff", 0.15),
+  investment: mixHex(ACCENT, "#000000", 0.55),
 };
-const GRID_COLOR = "#eadcf3";
-const AXIS_TICK = { fontSize: 12, fill: "#9b8ea3" };
-const LEGEND_STYLE = { fontSize: 12, color: "#7d6a89" };
+const GRID_COLOR = mixHex(ACCENT, "#ffffff", 0.82);
+const AXIS_TICK = { fontSize: 12, fill: mixHex(ACCENT, "#ffffff", 0.35) };
+const LEGEND_STYLE = { fontSize: 12, color: mixHex(ACCENT, "#000000", 0.15) };
 
 function CurrencyTooltip({ active, payload, label, currency }) {
   if (!active || !payload?.length) return null;
