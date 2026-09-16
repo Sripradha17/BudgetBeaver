@@ -4,11 +4,14 @@ import {
   Bar,
   LineChart,
   Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
+  ReferenceLine,
 } from "recharts";
 import Card from "./Card.jsx";
 import { pageTheme } from "../theme/pageTheme.js";
@@ -31,6 +34,11 @@ const COLORS = {
   expenses: mixHex(ACCENT, "#000000", 0.3),
   savings: mixHex(ACCENT, "#ffffff", 0.15),
   investment: mixHex(ACCENT, "#000000", 0.55),
+  netWorth: mixHex(ACCENT, "#000000", 0.4),
+  // A single dark accent shade for both forecast lines (same idea as a
+  // spreadsheet trendline always rendering in black) — dark enough to read
+  // clearly against either fill, but still the page's own hue, not literal black.
+  forecast: mixHex(ACCENT, "#000000", 0.8),
 };
 const GRID_COLOR = mixHex(ACCENT, "#ffffff", 0.82);
 const AXIS_TICK = { fontSize: 12, fill: mixHex(ACCENT, "#ffffff", 0.35) };
@@ -70,34 +78,89 @@ export function IncomeExpenseTrendChart({ data, currency }) {
   );
 }
 
-export function SavingsInvestmentTrendChart({ data, currency }) {
+export function NetWorthTrendChart({ data, currency }) {
   return (
-    <Card id="reports-savings-investment-chart">
-      <h3 className="font-bold mb-3">Savings &amp; investment growth over time</h3>
+    <Card id="reports-net-worth-chart">
+      <h3 className="font-bold mb-3">Net worth by month</h3>
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={data} margin={{ left: 0, right: 10 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} />
           <XAxis dataKey="label" tick={AXIS_TICK} />
           <YAxis tick={AXIS_TICK} width={50} />
           <Tooltip content={<CurrencyTooltip currency={currency} />} />
-          <Legend wrapperStyle={LEGEND_STYLE} />
+          <ReferenceLine y={0} stroke={GRID_COLOR} strokeWidth={1.5} />
           <Line
             type="monotone"
-            dataKey="savingsCumulative"
-            name="Savings (total)"
-            stroke={COLORS.savings}
-            strokeWidth={2.5}
-            dot={{ r: 3 }}
-          />
-          <Line
-            type="monotone"
-            dataKey="investmentCumulative"
-            name="Investment (total)"
-            stroke={COLORS.investment}
+            dataKey="netWorth"
+            name="Net worth"
+            stroke={COLORS.netWorth}
             strokeWidth={2.5}
             dot={{ r: 3 }}
           />
         </LineChart>
+      </ResponsiveContainer>
+    </Card>
+  );
+}
+
+export function SavingsInvestmentTrendChart({ data, currency }) {
+  return (
+    <Card id="reports-savings-investment-chart">
+      <h3 className="font-bold mb-1">Savings &amp; investment growth over time</h3>
+      <p className="text-xs text-ink/40 mb-3">
+        Solid fill = actual. Dotted = forecast, a running total of your budgeted amount each month.
+      </p>
+      <ResponsiveContainer width="100%" height={240}>
+        <AreaChart data={data} margin={{ left: 0, right: 10 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} />
+          <XAxis dataKey="label" tick={AXIS_TICK} />
+          <YAxis tick={AXIS_TICK} width={50} />
+          <Tooltip content={<CurrencyTooltip currency={currency} />} />
+          <Legend wrapperStyle={LEGEND_STYLE} />
+          {/* Investment area painted first (usually the larger of the two), so
+              the savings area layered on top only darkens the region up to
+              its own line, matching the "two overlapping fills from zero" look. */}
+          <Area
+            type="monotone"
+            dataKey="investmentCumulative"
+            name="Investment (actual)"
+            stroke={COLORS.investment}
+            fill={COLORS.investment}
+            fillOpacity={0.35}
+            strokeWidth={2.5}
+            dot={{ r: 3 }}
+          />
+          <Area
+            type="monotone"
+            dataKey="savingsCumulative"
+            name="Savings (actual)"
+            stroke={COLORS.savings}
+            fill={COLORS.savings}
+            fillOpacity={0.55}
+            strokeWidth={2.5}
+            dot={{ r: 3 }}
+          />
+          <Area
+            type="monotone"
+            dataKey="forecastInvestment"
+            name="Investment (forecast)"
+            stroke={COLORS.forecast}
+            fill="none"
+            strokeWidth={2}
+            strokeDasharray="1.5 3"
+            dot={false}
+          />
+          <Area
+            type="monotone"
+            dataKey="forecastSavings"
+            name="Savings (forecast)"
+            stroke={COLORS.forecast}
+            fill="none"
+            strokeWidth={2}
+            strokeDasharray="1.5 3"
+            dot={false}
+          />
+        </AreaChart>
       </ResponsiveContainer>
     </Card>
   );

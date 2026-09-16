@@ -1,16 +1,21 @@
 import { useMemo, useState } from "react";
-import { TrendingUp, TrendingDown, Sparkles, PiggyBank, Download } from "lucide-react";
+import { TrendingUp, TrendingDown, Sparkles, PiggyBank, Download, Receipt } from "lucide-react";
 import { useData } from "../context/DataContext.jsx";
 import { useMonth } from "../context/MonthContext.jsx";
 import { buildMonthlyTrends } from "../lib/trends.js";
-import { shiftMonth } from "../lib/month.js";
+import { shiftMonth, monthKey, toInputDate } from "../lib/month.js";
+import { getEffectiveBudget } from "../lib/budgets.js";
 import Card from "../components/Card.jsx";
 import CategoryBadge from "../components/CategoryBadge.jsx";
 import { categoryIndex } from "../lib/categories.js";
 import { shadeCss } from "../lib/shades.js";
 import PageHero from "../components/PageHero.jsx";
 import { illustrations, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
-import { IncomeExpenseTrendChart, SavingsInvestmentTrendChart } from "../components/TrendCharts.jsx";
+import {
+  IncomeExpenseTrendChart,
+  SavingsInvestmentTrendChart,
+  NetWorthTrendChart,
+} from "../components/TrendCharts.jsx";
 import { exportExpensesCsv, exportIncomeCsv } from "../lib/exportData.js";
 
 const TREND_RANGES = [
@@ -98,6 +103,30 @@ export default function ReportsPage() {
       .sort((a, b) => b.total - a.total);
   }, [scopedExpenses, categoryById]);
 
+  // Everyday (non-wealth) spending, per category — the "where did the money
+  // actually go" view that only existed for savings/investment before.
+  const spendingByCategory = useMemo(() => {
+    const map = {};
+    for (const e of scopedExpenses) {
+      const cat = categoryById[e.category];
+      if (isWealthCategory(cat)) continue;
+      map[e.category] = (map[e.category] || 0) + e.amount;
+    }
+    return Object.entries(map)
+      .map(([id, total]) => ({ category: categoryById[id], total }))
+      .filter((r) => r.category)
+      .sort((a, b) => b.total - a.total);
+  }, [scopedExpenses, categoryById]);
+  const maxCategorySpend = spendingByCategory[0]?.total || 1;
+
+  // Largest individual transactions in the selected scope — good for
+  // spotting anomalies (this is exactly what would've caught the
+  // phantom-recurring-expense bug immediately).
+  const biggestTransactions = useMemo(
+    () => [...scopedExpenses].sort((a, b) => b.amount - a.amount).slice(0, 8),
+    [scopedExpenses]
+  );
+
   // "All time" only actually means "since you started tracking" — so name that
   // start date instead of implying data goes back further than it does.
   const trackingStartLabel = useMemo(() => {
@@ -111,10 +140,68 @@ export default function ReportsPage() {
       ? `since ${trackingStartLabel}`
       : STATS_SCOPES.find((s) => s.value === statsScope).label.toLowerCase();
 
-  const trendData = useMemo(
+  const rawTrendData = useMemo(
     () => buildMonthlyTrends(expenses, income, selectedMonth, trendMonths),
     [expenses, income, selectedMonth, trendMonths]
   );
+
+  // Forecast: a running total of each month's budgeted Savings/Investment
+  // amount (whatever's set in Settings/Budgets, including one-time overrides
+  // for a given month) — "if you'd hit your budget every month, where would
+  // you be." A plan-based line, not a statistical fit, so it can't go
+  // negative and doesn't need to converge with actual anywhere.
+  const trendData = useMemo(() => {
+    let savingsForecastCum = 0;
+    let investmentForecastCum = 0;
+    return rawTrendData.map((row) => {
+      savingsForecastCum += getEffectiveBudget(settings, "savings", row.key);
+      investmentForecastCum += getEffectiveBudget(settings, "investment", row.key);
+      return {
+        ...row,
+        forecastSavings: Math.round(savingsForecastCum * 100) / 100,
+        forecastInvestment: Math.round(investmentForecastCum * 100) / 100,
+      };
+    });
+  }, [rawTrendData, settings]);
+
+  // Net worth (income minus everyday spending, cumulative) per month, over
+  // the same window as the other trend charts — mirrors buildMonthlyTrends'
+  // carry-forward approach but needs categoryById to tell wealth categories
+  // apart, which the shared trends.js lib doesn't have access to.
+  const netWorthTrendData = useMemo(() => {
+    const months = [];
+    for (let i = trendMonths - 1; i >= 0; i--) months.push(shiftMonth(selectedMonth, -i));
+    const monthKeys = months.map(monthKey);
+    const earliestKey = monthKeys[0];
+
+    let cumulative = 0;
+    for (const e of expenses) {
+      if (monthKey(new Date(e.date)) < earliestKey && !isWealthCategory(categoryById[e.category])) {
+        cumulative -= e.amount;
+      }
+    }
+    for (const i of income) {
+      if (monthKey(new Date(i.date)) < earliestKey) cumulative += i.amount;
+    }
+
+    const incomeByMonth = {};
+    income.forEach((i) => {
+      const k = monthKey(new Date(i.date));
+      incomeByMonth[k] = (incomeByMonth[k] || 0) + i.amount;
+    });
+    const spendingByMonth = {};
+    expenses.forEach((e) => {
+      if (isWealthCategory(categoryById[e.category])) return;
+      const k = monthKey(new Date(e.date));
+      spendingByMonth[k] = (spendingByMonth[k] || 0) + e.amount;
+    });
+
+    return months.map((m, idx) => {
+      const k = monthKeys[idx];
+      cumulative += (incomeByMonth[k] || 0) - (spendingByMonth[k] || 0);
+      return { key: k, label: m.toLocaleDateString("en-US", { month: "short" }), netWorth: Math.round(cumulative * 100) / 100 };
+    });
+  }, [expenses, income, categoryById, selectedMonth, trendMonths]);
 
   const fmt = (n) => `${settings.currency}${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 
@@ -213,8 +300,61 @@ export default function ReportsPage() {
 
       <div id="reports-charts" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <IncomeExpenseTrendChart data={trendData} currency={settings.currency} />
+        <NetWorthTrendChart data={netWorthTrendData} currency={settings.currency} />
         <SavingsInvestmentTrendChart data={trendData} currency={settings.currency} />
       </div>
+
+      <Card id="reports-spending-by-category">
+        <h2 className="font-bold text-lg mb-3 flex items-center gap-1.5">
+          <TrendingDown size={17} className="text-[var(--accent-text)]" /> Where the money went
+          <span className="text-xs font-normal text-ink/40 normal-case">({scopeLabel})</span>
+        </h2>
+        {spendingByCategory.length === 0 ? (
+          <p className="text-ink/50 text-sm text-center py-6">No spending logged {statsScope === "all" ? "yet" : `for ${scopeLabel}`}.</p>
+        ) : (
+          <ul className="space-y-2.5">
+            {spendingByCategory.map(({ category, total }, idx) => (
+              <li key={category.id}>
+                <div className="flex items-center justify-between mb-1">
+                  <CategoryBadge category={category} index={categoryIndex(categories, category.id)} />
+                  <span className="text-sm font-semibold text-ink">{fmt(total)}</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-mist overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${(total / maxCategorySpend) * 100}%`, backgroundColor: shadeCss(idx % 5) }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+
+      <Card id="reports-biggest-transactions">
+        <h2 className="font-bold text-lg mb-3 flex items-center gap-1.5">
+          <Receipt size={17} className="text-[var(--accent-text)]" /> Biggest transactions
+          <span className="text-xs font-normal text-ink/40 normal-case">({scopeLabel})</span>
+        </h2>
+        {biggestTransactions.length === 0 ? (
+          <p className="text-ink/50 text-sm text-center py-6">No expenses logged {statsScope === "all" ? "yet" : `for ${scopeLabel}`}.</p>
+        ) : (
+          <ul className="divide-y divide-mist">
+            {biggestTransactions.map((e) => (
+              <li key={e._id} className="flex items-center justify-between py-2.5 gap-2">
+                <div className="min-w-0">
+                  <CategoryBadge category={categoryById[e.category]} index={categoryIndex(categories, e.category)} />
+                  <p className="text-xs text-ink/40 mt-1 truncate">
+                    {toInputDate(e.date)}
+                    {e.note ? ` · ${e.note}` : ""}
+                  </p>
+                </div>
+                <span className="text-sm font-semibold text-ink shrink-0">{fmt(e.amount)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
 
       <Card id="reports-invested-saved">
         <h2 className="font-bold text-lg mb-3 flex items-center gap-1.5">
