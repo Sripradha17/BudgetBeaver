@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { Plus, Trash2, Target, PiggyBank, PartyPopper } from "lucide-react";
+import { Plus, Trash2, Target, PiggyBank, PartyPopper, Pencil, Archive, ArchiveRestore, X, Check } from "lucide-react";
 import { useData } from "../context/DataContext.jsx";
-import { fromInputDate } from "../lib/month.js";
+import { fromInputDate, toInputDate } from "../lib/month.js";
 import Card from "../components/Card.jsx";
 import PhotoBanner from "../components/PhotoBanner.jsx";
 import PageHero from "../components/PageHero.jsx";
@@ -19,6 +19,9 @@ export default function GoalsPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [progressEdits, setProgressEdits] = useState({});
+  const [editingGoalId, setEditingGoalId] = useState(null);
+  const [editForm, setEditForm] = useState(null);
+  const [showArchived, setShowArchived] = useState(false);
 
   const progressByGoal = useMemo(() => {
     const map = {};
@@ -62,6 +65,33 @@ export default function GoalsPage() {
       return next;
     });
   }
+
+  function startEditGoal(g) {
+    setEditingGoalId(g._id);
+    setEditForm({
+      name: g.name,
+      targetAmount: String(g.targetAmount),
+      targetDate: g.targetDate ? toInputDate(g.targetDate) : "",
+    });
+  }
+
+  async function saveEditGoal(goalId) {
+    if (!editForm.name.trim() || !editForm.targetAmount) return;
+    await updateGoal(goalId, {
+      name: editForm.name.trim(),
+      targetAmount: parseFloat(editForm.targetAmount),
+      targetDate: editForm.targetDate ? fromInputDate(editForm.targetDate) : null,
+    });
+    setEditingGoalId(null);
+    setEditForm(null);
+  }
+
+  async function toggleArchived(goalId, archived) {
+    await updateGoal(goalId, { archived });
+  }
+
+  const activeGoals = useMemo(() => goals.filter((g) => !g.archived), [goals]);
+  const archivedGoals = useMemo(() => goals.filter((g) => g.archived), [goals]);
 
   const fmt = (n) => `${settings.currency}${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 
@@ -133,7 +163,7 @@ export default function GoalsPage() {
         </form>
       </Card>
 
-      {goals.length === 0 ? (
+      {activeGoals.length === 0 ? (
         <Card id="goals-list">
           <EmptyState
             image={illustrations.goalsAdventure}
@@ -144,7 +174,7 @@ export default function GoalsPage() {
         </Card>
       ) : (
         <div id="goals-list" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {goals.some((g) => {
+          {activeGoals.some((g) => {
             const progress = progressByGoal[g._id] || 0;
             return g.targetAmount > 0 && progress >= g.targetAmount;
           }) && (
@@ -163,12 +193,13 @@ export default function GoalsPage() {
               </div>
             </Card>
           )}
-          {goals.map((g, idx) => {
+          {activeGoals.map((g, idx) => {
             const progress = progressByGoal[g._id] || 0;
             const pct = g.targetAmount > 0 ? Math.min(100, (progress / g.targetAmount) * 100) : 0;
             const reached = pct >= 100;
             const category = categories.find((c) => c.id === g.linkedCategoryId);
             const isEditingProgress = progressEdits[g._id] !== undefined;
+            const isEditingGoal = editingGoalId === g._id;
 
             return (
               <Card
@@ -178,22 +209,93 @@ export default function GoalsPage() {
                 }`}
                 style={{ animationDelay: `${idx * 50}ms` }}
               >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    {reached ? (
-                      <PartyPopper size={16} className="text-gold shrink-0" />
+                <div className="flex items-start justify-between mb-2 gap-2">
+                  {isEditingGoal ? (
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <input
+                        value={editForm.name}
+                        onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
+                        className="w-full rounded border border-mist px-2 py-1 text-sm font-semibold"
+                        placeholder="Goal name"
+                      />
+                      <div className="flex gap-1.5">
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={editForm.targetAmount}
+                          onChange={(e) => setEditForm((f) => ({ ...f, targetAmount: e.target.value }))}
+                          className="w-24 rounded border border-mist px-2 py-1 text-xs"
+                          placeholder="Target"
+                        />
+                        <input
+                          type="date"
+                          value={editForm.targetDate}
+                          onChange={(e) => setEditForm((f) => ({ ...f, targetDate: e.target.value }))}
+                          className="flex-1 rounded border border-mist px-2 py-1 text-xs"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 min-w-0">
+                      {reached ? (
+                        <PartyPopper size={16} className="text-gold shrink-0" />
+                      ) : (
+                        <Target size={16} className="text-[var(--accent-text)] shrink-0" />
+                      )}
+                      <span className="font-semibold text-sm truncate">{g.name}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {isEditingGoal ? (
+                      <>
+                        <button
+                          onClick={() => saveEditGoal(g._id)}
+                          className="text-[var(--accent-text)] hover:opacity-70"
+                          aria-label="Save"
+                        >
+                          <Check size={15} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditingGoalId(null);
+                            setEditForm(null);
+                          }}
+                          className="text-ink/30 hover:text-ink"
+                          aria-label="Cancel"
+                        >
+                          <X size={15} />
+                        </button>
+                      </>
                     ) : (
-                      <Target size={16} className="text-[var(--accent-text)] shrink-0" />
+                      <>
+                        <button
+                          onClick={() => startEditGoal(g)}
+                          className="text-ink/30 hover:text-ink"
+                          aria-label={`Edit ${g.name}`}
+                        >
+                          <Pencil size={14} />
+                        </button>
+                        {reached && (
+                          <button
+                            onClick={() => toggleArchived(g._id, true)}
+                            className="text-ink/30 hover:text-[var(--accent-text)]"
+                            aria-label={`Archive ${g.name}`}
+                            title="Archive (hides it without deleting)"
+                          >
+                            <Archive size={14} />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => removeGoal(g._id)}
+                          className="text-ink/30 hover:text-red-500"
+                          aria-label={`Delete ${g.name}`}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </>
                     )}
-                    <span className="font-semibold text-sm truncate">{g.name}</span>
                   </div>
-                  <button
-                    onClick={() => removeGoal(g._id)}
-                    className="text-ink/30 hover:text-red-500 shrink-0"
-                    aria-label={`Delete ${g.name}`}
-                  >
-                    <Trash2 size={14} />
-                  </button>
                 </div>
                 <div className="h-2.5 rounded-full bg-mist overflow-hidden mb-1.5">
                   <div
@@ -246,6 +348,42 @@ export default function GoalsPage() {
             );
           })}
         </div>
+      )}
+
+      {archivedGoals.length > 0 && (
+        <Card id="goals-archived">
+          <button
+            onClick={() => setShowArchived((v) => !v)}
+            className="flex items-center gap-1.5 text-sm font-medium text-ink/60 hover:text-ink"
+          >
+            <ArchiveRestore size={15} />
+            {showArchived ? "Hide" : "Show"} archived goals ({archivedGoals.length})
+          </button>
+          {showArchived && (
+            <ul className="divide-y divide-mist mt-3">
+              {archivedGoals.map((g) => (
+                <li key={g._id} className="flex items-center justify-between py-2 text-sm gap-2">
+                  <span className="truncate text-ink/60">{g.name}</span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => toggleArchived(g._id, false)}
+                      className="text-xs font-medium text-[var(--accent-text)] hover:underline"
+                    >
+                      Unarchive
+                    </button>
+                    <button
+                      onClick={() => removeGoal(g._id)}
+                      className="text-ink/30 hover:text-red-500"
+                      aria-label={`Delete ${g.name}`}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
       )}
     </div>
   );

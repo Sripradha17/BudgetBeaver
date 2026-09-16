@@ -34,6 +34,12 @@ function daysInMonth(monthKeyStr) {
 // already have a matching (by note) expense that month, mapped to ready-to-insert
 // expense payloads landing on the same day-of-month (clamped to the shorter month).
 export function getMissingRecurringForMonth(expenses, targetMonthKey) {
+  // A charge can't be "missing" from a month that hasn't happened yet — without
+  // this, browsing the month picker forward and clicking "Add all" repeatedly
+  // creates real future-dated expense rows that never actually occurred, which
+  // silently inflates every all-time total (Reports' net worth, savings rate, etc).
+  if (targetMonthKey > monthKey(new Date())) return [];
+
   const templates = getRecurringTemplates(expenses);
   const monthExpenses = expenses.filter((e) => monthKey(new Date(e.date)) === targetMonthKey);
   const presentNotes = new Set(monthExpenses.map((e) => normNote(e.note)));

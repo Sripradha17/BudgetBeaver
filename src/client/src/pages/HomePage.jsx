@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
+import { getCurrentUserName } from "../lib/api.js";
 import {
   ArrowUpRight,
   ArrowDownRight,
@@ -131,7 +132,7 @@ export default function HomePage() {
         id="home-hero"
         tint="forest"
         eyebrow="Dashboard"
-        title={`${greeting()}, ${settings.myLabel}`}
+        title={`${greeting()}, ${getCurrentUserName() || settings.myLabel}`}
         description="Here's your money at a glance this month — spending, income, and how close your goals are."
         image={illustrations.dashboard}
         aspect={HERO_ASPECT}

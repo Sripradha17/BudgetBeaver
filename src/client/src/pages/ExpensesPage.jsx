@@ -56,7 +56,8 @@ export default function ExpensesPage() {
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterPerson, setFilterPerson] = useState("all");
   const [sortBy, setSortBy] = useState("date-desc");
-  const PAGE_SIZE = 25;
+  const PAGE_SIZE_OPTIONS = [25, 50, 100, "all"];
+  const [pageSize, setPageSize] = useState(25);
   const [page, setPage] = useState(1);
 
   const [form, setForm] = useState({
@@ -91,7 +92,11 @@ export default function ExpensesPage() {
     let rows = monthExpenses.filter((e) => {
       if (filterCategory !== "all" && e.category !== filterCategory) return false;
       if (filterPerson !== "all" && (e.person || "mine") !== filterPerson) return false;
-      if (q && !(e.note || "").toLowerCase().includes(q)) return false;
+      if (q) {
+        const noteMatch = (e.note || "").toLowerCase().includes(q);
+        const amountMatch = String(e.amount).includes(q);
+        if (!noteMatch && !amountMatch) return false;
+      }
       return true;
     });
     const sorters = {
@@ -105,9 +110,10 @@ export default function ExpensesPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [key, search, filterCategory, filterPerson, sortBy]);
+  }, [key, search, filterCategory, filterPerson, sortBy, pageSize]);
 
-  const pagedExpenses = visibleExpenses.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const effectivePageSize = pageSize === "all" ? Math.max(visibleExpenses.length, 1) : pageSize;
+  const pagedExpenses = visibleExpenses.slice((page - 1) * effectivePageSize, page * effectivePageSize);
 
   // Group into day sections when sorted chronologically — reads like a real transaction
   // feed instead of repeating the same date on every row. Amount-sorted views stay flat
@@ -148,6 +154,22 @@ export default function ExpensesPage() {
     () => (dismissedRecurringMonths.includes(key) ? [] : getMissingRecurringForMonth(expenses, key)),
     [expenses, key, dismissedRecurringMonths]
   );
+  // Checked-by-default, one entry per missingRecurring index — lets you pick
+  // which of last month's recurring charges actually recur this month instead
+  // of forcing an all-or-nothing "Add all".
+  const [checkedRecurring, setCheckedRecurring] = useState(new Set());
+  useEffect(() => {
+    setCheckedRecurring(new Set(missingRecurring.map((_, i) => i)));
+  }, [missingRecurring]);
+
+  function toggleRecurringChecked(i) {
+    setCheckedRecurring((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
+  }
 
   const {
     pending: pendingDelete,
@@ -172,10 +194,12 @@ export default function ExpensesPage() {
     deleteWithUndo(expense, `"${label}" deleted`);
   }
 
-  async function handleAddAllRecurring() {
+  async function handleAddSelectedRecurring() {
+    const toAdd = missingRecurring.filter((_, i) => checkedRecurring.has(i));
+    if (toAdd.length === 0) return;
     setAddingRecurring(true);
     try {
-      await bulkAddExpenses(missingRecurring);
+      await bulkAddExpenses(toAdd);
     } finally {
       setAddingRecurring(false);
     }
@@ -424,20 +448,46 @@ export default function ExpensesPage() {
           <div className="flex items-start gap-3">
             <Repeat size={18} className="text-[var(--accent-text)] shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-ink">
-                {missingRecurring.length} recurring transaction{missingRecurring.length !== 1 ? "s" : ""} look
-                missing this month
-              </p>
-              <p className="text-xs text-ink/60 mt-0.5">
-                {missingRecurring.map((m) => `${m.note || categoryById[m.category]?.label} (${settings.currency}${m.amount.toLocaleString()})`).join(", ")}
-              </p>
-              <div className="flex gap-2 mt-2">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-semibold text-ink">
+                  {missingRecurring.length} recurring transaction{missingRecurring.length !== 1 ? "s" : ""} look
+                  missing this month — pick which ones actually recur
+                </p>
                 <button
-                  onClick={handleAddAllRecurring}
-                  disabled={addingRecurring}
+                  onClick={() =>
+                    setCheckedRecurring((prev) =>
+                      prev.size === missingRecurring.length
+                        ? new Set()
+                        : new Set(missingRecurring.map((_, i) => i))
+                    )
+                  }
+                  className="text-xs font-medium text-[var(--accent-text)] hover:underline shrink-0"
+                >
+                  {checkedRecurring.size === missingRecurring.length ? "Select none" : "Select all"}
+                </button>
+              </div>
+              <ul className="mt-2 space-y-1">
+                {missingRecurring.map((m, i) => (
+                  <li key={i}>
+                    <label className="flex items-center gap-2 text-xs text-ink/70">
+                      <input
+                        type="checkbox"
+                        checked={checkedRecurring.has(i)}
+                        onChange={() => toggleRecurringChecked(i)}
+                      />
+                      {m.note || categoryById[m.category]?.label} ({settings.currency}
+                      {m.amount.toLocaleString()})
+                    </label>
+                  </li>
+                ))}
+              </ul>
+              <div className="flex gap-2 mt-2.5">
+                <button
+                  onClick={handleAddSelectedRecurring}
+                  disabled={addingRecurring || checkedRecurring.size === 0}
                   className="rounded-lg bg-[var(--accent)] text-white text-xs font-medium px-3 py-1.5 hover:bg-[var(--accent-hover)] disabled:opacity-50"
                 >
-                  {addingRecurring ? "Adding…" : `Add all ${missingRecurring.length}`}
+                  {addingRecurring ? "Adding…" : `Add selected (${checkedRecurring.size})`}
                 </button>
                 <button
                   onClick={handleDismissRecurring}
@@ -460,7 +510,7 @@ export default function ExpensesPage() {
               <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink/30" />
               <input
                 type="text"
-                placeholder="Search notes…"
+                placeholder="Search notes or amount…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full rounded-lg border border-mist pl-8 pr-3 py-1.5 text-sm focus:outline-[var(--accent-ring)]"
@@ -590,7 +640,14 @@ export default function ExpensesPage() {
           </ul>
         )}
 
-        <Pagination page={page} pageSize={PAGE_SIZE} total={visibleExpenses.length} onPageChange={setPage} />
+        <Pagination
+          page={page}
+          pageSize={pageSize}
+          total={visibleExpenses.length}
+          onPageChange={setPage}
+          pageSizeOptions={PAGE_SIZE_OPTIONS}
+          onPageSizeChange={setPageSize}
+        />
       </Card>
 
       {showImport && <ImportExpenses onClose={() => setShowImport(false)} />}

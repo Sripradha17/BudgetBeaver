@@ -22,13 +22,14 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-  const { name, targetAmount, targetDate, linkedCategoryId, manualProgress } = req.body;
+  const { name, targetAmount, targetDate, linkedCategoryId, manualProgress, archived } = req.body;
   const update = {};
   if (name !== undefined) update.name = name;
   if (targetAmount !== undefined) update.targetAmount = targetAmount;
   if (targetDate !== undefined) update.targetDate = targetDate;
   if (linkedCategoryId !== undefined) update.linkedCategoryId = linkedCategoryId || null;
   if (manualProgress !== undefined) update.manualProgress = manualProgress;
+  if (archived !== undefined) update.archived = archived;
   const goal = await Goal.findOneAndUpdate(
     { _id: req.params.id, householdId: req.householdId },
     update,

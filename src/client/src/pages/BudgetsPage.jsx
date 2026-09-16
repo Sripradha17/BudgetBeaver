@@ -4,24 +4,20 @@ import { useData } from "../context/DataContext.jsx";
 import { useMonth } from "../context/MonthContext.jsx";
 import { monthKey } from "../lib/month.js";
 import Card from "../components/Card.jsx";
-import Pagination from "../components/Pagination.jsx";
 import BudgetCategoryRow from "../components/BudgetCategoryRow.jsx";
 import PageHero from "../components/PageHero.jsx";
 import { illustrations, HERO_ASPECT, illustrationEdgeColor } from "../assets/illustrations/index.js";
 import { exportMonthToExcel } from "../lib/exportExcel.js";
-import { getEffectiveBudget, isOneTimeBudget } from "../lib/budgets.js";
+import { getEffectiveBudget, isOneTimeBudget, oneTimeBudgetKey } from "../lib/budgets.js";
 import { categoryIndex } from "../lib/categories.js";
 import { shadeCss } from "../lib/shades.js";
 
-const PAGE_SIZE = 10;
-
 export default function BudgetsPage() {
-  const { expenses, income, categories, settings, setBudget } = useData();
+  const { expenses, income, categories, settings, setBudget, updateSettings } = useData();
   const { selectedMonth, key } = useMonth();
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [editRecurring, setEditRecurring] = useState(true);
-  const [page, setPage] = useState(1);
 
   const [pickerCategoryId, setPickerCategoryId] = useState(categories[0]?.id || "");
   const [pickerAmount, setPickerAmount] = useState("");
@@ -43,7 +39,20 @@ export default function BudgetsPage() {
   async function handlePickerSave() {
     setPickerSaving(true);
     try {
-      await setBudget(pickerCategoryId, parseFloat(pickerAmount) || 0, pickerRecurring ? null : key);
+      const amount = parseFloat(pickerAmount) || 0;
+      if (pickerRecurring) {
+        await setBudget(pickerCategoryId, amount, null);
+        // Switching back to "recurring" must also clear any existing one-time
+        // override for this month, otherwise getEffectiveBudget keeps
+        // preferring the stale override and the recurring value never shows.
+        if (isOneTimeBudget(settings, pickerCategoryId, key)) {
+          const next = { ...settings.oneTimeBudgets };
+          delete next[oneTimeBudgetKey(key, pickerCategoryId)];
+          await updateSettings({ oneTimeBudgets: next });
+        }
+      } else {
+        await setBudget(pickerCategoryId, amount, key);
+      }
       setPickerSaved(true);
     } finally {
       setPickerSaving(false);
@@ -74,9 +83,27 @@ export default function BudgetsPage() {
   }
 
   async function saveEdit(id) {
-    await setBudget(id, parseFloat(editValue) || 0, editRecurring ? null : key);
+    const amount = parseFloat(editValue) || 0;
+    if (editRecurring) {
+      await setBudget(id, amount, null);
+      if (isOneTimeBudget(settings, id, key)) {
+        const next = { ...settings.oneTimeBudgets };
+        delete next[oneTimeBudgetKey(key, id)];
+        await updateSettings({ oneTimeBudgets: next });
+      }
+    } else {
+      await setBudget(id, amount, key);
+    }
     setEditingId(null);
   }
+
+  const sortedCategories = useMemo(
+    () =>
+      [...categories].sort(
+        (a, b) => getEffectiveBudget(settings, b.id, key) - getEffectiveBudget(settings, a.id, key)
+      ),
+    [categories, settings, key]
+  );
 
   function handleExport() {
     exportMonthToExcel({
@@ -176,7 +203,7 @@ export default function BudgetsPage() {
         style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
       >
         <ul className="divide-y divide-mist">
-        {categories.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((c) => {
+        {sortedCategories.map((c) => {
           const budget = getEffectiveBudget(settings, c.id, key);
           const oneTime = isOneTimeBudget(settings, c.id, key);
           const spent = spentByCategory[c.id] || 0;
@@ -242,9 +269,6 @@ export default function BudgetsPage() {
           );
         })}
       </ul>
-      <div className="px-4">
-        <Pagination page={page} pageSize={PAGE_SIZE} total={categories.length} onPageChange={setPage} />
-      </div>
       </div>
     </div>
   );

@@ -21,17 +21,27 @@ export function clearToken() {
 // (no signature check needed client-side — the server verifies on every
 // request). Tokens issued before the payload carried an email fall back to
 // null gracefully instead of throwing.
-export function getCurrentUserEmail() {
+function getTokenPayload() {
   const token = getToken();
   if (!token) return null;
   try {
     const payloadPart = token.split(".")[1];
     const base64 = payloadPart.replace(/-/g, "+").replace(/_/g, "/").padEnd(payloadPart.length + ((4 - (payloadPart.length % 4)) % 4), "=");
-    const payload = JSON.parse(atob(base64));
-    return payload.email || null;
+    return JSON.parse(atob(base64));
   } catch {
     return null;
   }
+}
+
+export function getCurrentUserEmail() {
+  return getTokenPayload()?.email || null;
+}
+
+// Per-user display name (e.g. for "Good morning, X" greetings) — distinct
+// from settings.myLabel/spouseLabel, which are shared household-wide labels
+// used to tag who an expense/income entry belongs to.
+export function getCurrentUserName() {
+  return getTokenPayload()?.name || null;
 }
 
 async function request(path, options = {}) {
@@ -73,10 +83,16 @@ async function authRequest(path, body) {
 
 export const api = {
   login: (email, password) => authRequest("/login", { email, password }),
-  signup: (email, password, inviteCode) => authRequest("/signup", { email, password, inviteCode }),
+  signup: (email, password, inviteCode, name) => authRequest("/signup", { email, password, inviteCode, name }),
+  updateProfile: async (name) => {
+    const { token } = await request("/me", { method: "PUT", body: JSON.stringify({ name }) });
+    setToken(token);
+    return getCurrentUserName();
+  },
 
   getHousehold: () => request("/household"),
   regenerateInvite: () => request("/household/regenerate-invite", { method: "POST" }),
+  removeMember: (userId) => request(`/household/members/${userId}`, { method: "DELETE" }),
 
   getExpenses: () => request("/expenses"),
   createExpense: (data) => request("/expenses", { method: "POST", body: JSON.stringify(data) }),

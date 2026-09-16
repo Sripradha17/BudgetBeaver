@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Trash2, AlertTriangle, LogOut, Bell, BellOff, Download, Mail, Users, Copy, Check, RefreshCw } from "lucide-react";
+import { Plus, Trash2, AlertTriangle, LogOut, Bell, BellOff, Download, Mail, Users, Copy, Check, RefreshCw, UserMinus, Undo2 } from "lucide-react";
 import { useData } from "../context/DataContext.jsx";
-import { colorForNewCategory } from "../lib/categories.js";
-import { api, clearToken, getCurrentUserEmail } from "../lib/api.js";
+import { colorForNewCategory, ICON_OPTIONS, COLOR_OPTIONS } from "../lib/categories.js";
+import { api, clearToken, getCurrentUserEmail, getCurrentUserName } from "../lib/api.js";
 import { enableBillReminders, disableBillReminders, getBillReminderStatus } from "../lib/push.js";
 import { CURRENCIES } from "../lib/currency.js";
 import { exportExpensesCsv, exportIncomeCsv } from "../lib/exportData.js";
@@ -37,6 +37,9 @@ export default function SettingsPage({ onLogout }) {
   }, [categories]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryBudget, setNewCategoryBudget] = useState("");
+  const [newCategoryIcon, setNewCategoryIcon] = useState("MoreHorizontal");
+  const [newCategoryColor, setNewCategoryColor] = useState(COLOR_OPTIONS[0]);
+  const [confirmDeleteCategory, setConfirmDeleteCategory] = useState(null);
   const [confirmReset, setConfirmReset] = useState(false);
   const [saving, setSaving] = useState(false);
   const [pushStatus, setPushStatus] = useState("checking");
@@ -46,6 +49,12 @@ export default function SettingsPage({ onLogout }) {
   const [copied, setCopied] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
   const [confirmRegenerate, setConfirmRegenerate] = useState(false);
+  const [confirmRemoveMember, setConfirmRemoveMember] = useState(null);
+  const [removingMember, setRemovingMember] = useState(false);
+  const [memberError, setMemberError] = useState(null);
+  const [myName, setMyName] = useState(getCurrentUserName() || "");
+  const [savingName, setSavingName] = useState(false);
+  const [nameSaved, setNameSaved] = useState(false);
 
   useEffect(() => {
     getBillReminderStatus().then(setPushStatus);
@@ -74,6 +83,34 @@ export default function SettingsPage({ onLogout }) {
       setConfirmRegenerate(false);
     } finally {
       setRegenerating(false);
+    }
+  }
+
+  async function handleSaveName(e) {
+    e.preventDefault();
+    const trimmed = myName.trim();
+    if (!trimmed) return;
+    setSavingName(true);
+    try {
+      await api.updateProfile(trimmed);
+      setNameSaved(true);
+      setTimeout(() => setNameSaved(false), 1500);
+    } finally {
+      setSavingName(false);
+    }
+  }
+
+  async function handleRemoveMember(userId) {
+    setRemovingMember(true);
+    setMemberError(null);
+    try {
+      await api.removeMember(userId);
+      setHousehold((h) => ({ ...h, members: h.members.filter((m) => m._id !== userId) }));
+      setConfirmRemoveMember(null);
+    } catch (err) {
+      setMemberError(err.message);
+    } finally {
+      setRemovingMember(false);
     }
   }
 
@@ -113,7 +150,8 @@ export default function SettingsPage({ onLogout }) {
     await addCategory({
       id,
       label: name,
-      badgeColor: colorForNewCategory(customCategories.length),
+      badgeColor: newCategoryColor,
+      icon: newCategoryIcon,
     });
     const budgetAmount = parseFloat(newCategoryBudget);
     if (!Number.isNaN(budgetAmount) && budgetAmount > 0) {
@@ -121,11 +159,23 @@ export default function SettingsPage({ onLogout }) {
     }
     setNewCategoryName("");
     setNewCategoryBudget("");
+    setNewCategoryIcon("MoreHorizontal");
+    setNewCategoryColor(colorForNewCategory(customCategories.length + 1));
   }
 
   async function handleReset() {
     await resetAll();
     setConfirmReset(false);
+  }
+
+  async function handleUndismissRecurringMonth(monthToRestore) {
+    const next = (settings.dismissedRecurringMonths || []).filter((m) => m !== monthToRestore);
+    await updateSettings({ dismissedRecurringMonths: next });
+  }
+
+  async function handleUnignoreDuplicate(signatureToRestore) {
+    const next = (settings.ignoredDuplicateSignatures || []).filter((s) => s !== signatureToRestore);
+    await updateSettings({ ignoredDuplicateSignatures: next });
   }
 
   return (
@@ -149,9 +199,35 @@ export default function SettingsPage({ onLogout }) {
           <p className="text-sm text-ink/70">
             Signed in as <span className="font-medium text-ink">{userEmail}</span>
           </p>
-          <p className="text-xs text-ink/50 mt-1">
+          <p className="text-xs text-ink/50 mt-1 mb-3">
             Data you add here is only ever visible to your household — no one else can see or
             edit it.
+          </p>
+          <form onSubmit={handleSaveName} className="flex flex-wrap items-end gap-2">
+            <label className="text-sm">
+              Your name
+              <input
+                value={myName}
+                onChange={(e) => {
+                  setMyName(e.target.value);
+                  setNameSaved(false);
+                }}
+                className="mt-1 w-48 rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
+                placeholder="What should we call you?"
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={savingName || !myName.trim()}
+              className="flex items-center gap-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium px-4 py-2 hover:bg-[var(--accent-hover)] disabled:opacity-50"
+            >
+              {nameSaved ? <Check size={15} /> : null}
+              {savingName ? "Saving…" : nameSaved ? "Saved" : "Save"}
+            </button>
+          </form>
+          <p className="text-xs text-ink/40 mt-1.5">
+            Used for your own greeting on the Home page — separate from the "Your label" /
+            "Spouse label" fields below, which tag who an expense or income entry belongs to.
           </p>
         </Card>
       )}
@@ -206,15 +282,50 @@ export default function SettingsPage({ onLogout }) {
             Members ({household.members.length})
           </p>
           <ul className="divide-y divide-mist rounded-lg border border-mist/70 overflow-hidden">
-            {household.members.map((m) => (
-              <li key={m._id} className="flex items-center justify-between px-3 py-2 text-sm">
-                <span className="truncate">{m.email}</span>
-                <span className="text-xs text-ink/40 shrink-0 ml-2">
-                  Joined {new Date(m.createdAt).toLocaleDateString(undefined, { month: "short", year: "numeric" })}
-                </span>
-              </li>
-            ))}
+            {household.members.map((m) => {
+              const isMe = m.email === userEmail;
+              return (
+                <li key={m._id} className="flex items-center justify-between px-3 py-2 text-sm gap-2">
+                  <span className="truncate">
+                    {m.email}
+                    {isMe && <span className="text-ink/40"> (you)</span>}
+                  </span>
+                  <span className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs text-ink/40">
+                      Joined {new Date(m.createdAt).toLocaleDateString(undefined, { month: "short", year: "numeric" })}
+                    </span>
+                    {!isMe &&
+                      (confirmRemoveMember === m._id ? (
+                        <span className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => handleRemoveMember(m._id)}
+                            disabled={removingMember}
+                            className="rounded bg-red-600 text-white text-xs font-medium px-2 py-1 hover:bg-red-700 disabled:opacity-50"
+                          >
+                            {removingMember ? "…" : "Remove"}
+                          </button>
+                          <button
+                            onClick={() => setConfirmRemoveMember(null)}
+                            className="rounded border border-mist text-xs font-medium px-2 py-1"
+                          >
+                            Cancel
+                          </button>
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmRemoveMember(m._id)}
+                          className="text-ink/30 hover:text-red-500"
+                          aria-label={`Remove ${m.email}`}
+                        >
+                          <UserMinus size={14} />
+                        </button>
+                      ))}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
+          {memberError && <p className="text-xs text-red-400 mt-2">{memberError}</p>}
         </Card>
       )}
 
@@ -279,43 +390,99 @@ export default function SettingsPage({ onLogout }) {
           {categories.map((c, idx) => (
             <div key={c.id} className="flex items-center gap-1">
               <CategoryBadge category={c} index={idx} />
-              {c.isCustom && (
-                <button
-                  onClick={() => removeCategory(c.id)}
-                  className="text-ink/30 hover:text-red-500"
-                  aria-label={`Delete ${c.label}`}
-                >
-                  <Trash2 size={14} />
-                </button>
-              )}
+              {c.isCustom &&
+                (confirmDeleteCategory === c.id ? (
+                  <span className="flex items-center gap-1">
+                    <button
+                      onClick={() => {
+                        removeCategory(c.id);
+                        setConfirmDeleteCategory(null);
+                      }}
+                      className="rounded bg-red-600 text-white text-[11px] font-medium px-1.5 py-0.5 hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteCategory(null)}
+                      className="text-ink/40 text-[11px] px-1"
+                    >
+                      Cancel
+                    </button>
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDeleteCategory(c.id)}
+                    className="text-ink/30 hover:text-red-500"
+                    aria-label={`Delete ${c.label}`}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                ))}
             </div>
           ))}
         </div>
         <p className="text-xs text-ink/50 mb-2">
           Budget allocations are edited on the Budgets page.
         </p>
-        <form onSubmit={handleAddCategory} className="flex flex-wrap gap-2">
-          <input
-            placeholder="New category name"
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-            className="flex-1 min-w-[140px] rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
-          />
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder={`Budget (${settings.currency}, optional)`}
-            value={newCategoryBudget}
-            onChange={(e) => setNewCategoryBudget(e.target.value)}
-            className="w-40 rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
-          />
-          <button
-            type="submit"
-            className="shrink-0 flex items-center gap-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium px-3 py-2 hover:bg-[var(--accent-hover)]"
-          >
-            <Plus size={16} /> Add
-          </button>
+        <form onSubmit={handleAddCategory} className="space-y-2.5">
+          <div className="flex flex-wrap gap-2">
+            <input
+              placeholder="New category name"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              className="flex-1 min-w-[140px] rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
+            />
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder={`Budget (${settings.currency}, optional)`}
+              value={newCategoryBudget}
+              onChange={(e) => setNewCategoryBudget(e.target.value)}
+              className="w-40 rounded-lg border border-mist px-3 py-2 text-sm focus:outline-[var(--accent-ring)]"
+            />
+            <button
+              type="submit"
+              className="shrink-0 flex items-center gap-1.5 rounded-lg bg-[var(--accent)] text-white text-sm font-medium px-3 py-2 hover:bg-[var(--accent-hover)]"
+            >
+              <Plus size={16} /> Add
+            </button>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-1 flex-wrap">
+              <span className="text-xs text-ink/50 mr-1">Icon</span>
+              {Object.entries(ICON_OPTIONS).map(([name, Icon]) => (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => setNewCategoryIcon(name)}
+                  aria-label={name}
+                  className={`flex h-7 w-7 items-center justify-center rounded-lg border ${
+                    newCategoryIcon === name ? "border-[var(--accent)] bg-[var(--tile-bg)]" : "border-mist text-ink/50"
+                  }`}
+                >
+                  <Icon size={14} />
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-1 flex-wrap">
+              <span className="text-xs text-ink/50 mr-1">Color</span>
+              {COLOR_OPTIONS.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => setNewCategoryColor(color)}
+                  aria-label={color}
+                  className="h-6 w-6 rounded-full"
+                  style={{
+                    backgroundColor: color,
+                    outline: newCategoryColor === color ? "2px solid var(--accent)" : "none",
+                    outlineOffset: "2px",
+                  }}
+                />
+              ))}
+            </div>
+          </div>
         </form>
       </Card>
 
@@ -354,6 +521,66 @@ export default function SettingsPage({ onLogout }) {
         )}
         {pushError && <p className="text-xs text-red-400 mt-2">{pushError}</p>}
       </Card>
+
+      {((settings.dismissedRecurringMonths || []).length > 0 ||
+        (settings.ignoredDuplicateSignatures || []).length > 0) && (
+        <Card id="settings-dismissed">
+          <h2 className="font-bold text-lg mb-1 flex items-center gap-1.5">
+            <Undo2 size={17} className="text-[var(--accent-text)]" /> Dismissed &amp; ignored
+          </h2>
+          <p className="text-xs text-ink/50 mb-3">
+            "Not this month" nudges and "Keep" clicks on possible duplicates, in case one was a
+            mistake.
+          </p>
+          {(settings.dismissedRecurringMonths || []).length > 0 && (
+            <div className="mb-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink/40 mb-1.5">
+                Skipped recurring-charge reminders
+              </p>
+              <ul className="space-y-1">
+                {settings.dismissedRecurringMonths.map((m) => (
+                  <li key={m} className="flex items-center justify-between text-sm">
+                    <span>{m}</span>
+                    <button
+                      onClick={() => handleUndismissRecurringMonth(m)}
+                      className="text-xs font-medium text-[var(--accent-text)] hover:underline"
+                    >
+                      Show reminder again
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {(settings.ignoredDuplicateSignatures || []).length > 0 && (
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink/40 mb-1.5">
+                Kept as separate transactions
+              </p>
+              <ul className="space-y-1">
+                {settings.ignoredDuplicateSignatures.map((sig) => {
+                  const [date, cents, note] = sig.split("|");
+                  return (
+                    <li key={sig} className="flex items-center justify-between text-sm gap-2">
+                      <span className="truncate">
+                        {date} · {settings.currency}
+                        {(Number(cents) / 100).toLocaleString()}
+                        {note ? ` · ${note}` : ""}
+                      </span>
+                      <button
+                        onClick={() => handleUnignoreDuplicate(sig)}
+                        className="text-xs font-medium text-[var(--accent-text)] hover:underline shrink-0"
+                      >
+                        Flag as duplicate again
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+        </Card>
+      )}
 
       <Card id="settings-export">
         <h2 className="font-bold text-lg mb-1 flex items-center gap-1.5">

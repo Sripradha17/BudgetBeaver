@@ -14,7 +14,50 @@ import {
   Repeat,
   User,
   MoreHorizontal,
+  Sofa,
+  GraduationCap,
+  Dog,
+  Baby,
+  Smartphone,
+  Wrench,
+  Film,
+  Briefcase,
 } from "lucide-react";
+
+// Fixed icon set a custom category can be assigned to (by name, since a
+// component reference can't be stored in Mongo) — picked in Settings' "Add
+// category" form and rendered via CategoryBadge/CategoryChipPicker.
+export const ICON_OPTIONS = {
+  Home,
+  ShoppingBasket,
+  Lightbulb,
+  Gift,
+  ShoppingCart,
+  Shirt,
+  UtensilsCrossed,
+  Plane,
+  Bus,
+  HeartPulse,
+  PiggyBank,
+  TrendingUp,
+  Repeat,
+  User,
+  Sofa,
+  GraduationCap,
+  Dog,
+  Baby,
+  Smartphone,
+  Wrench,
+  Film,
+  Briefcase,
+  MoreHorizontal,
+};
+
+export const COLOR_OPTIONS = [
+  "#c97b6e", "#4a8a7d", "#c9974f", "#7c6a9c", "#6b9e6d",
+  "#5490ab", "#b56b8a", "#a15048", "#8067a0", "#5f7a9e",
+  "#a17c5b", "#3f9142", "#2c8fbf", "#ff6b5e", "#7d8590",
+];
 
 // A muted, "modern dark UI" palette — same hue families as before so categories stay
 // recognizable, but desaturated so the app doesn't read as a wall of bright colors.
@@ -36,13 +79,8 @@ export const DEFAULT_CATEGORIES = [
   { id: "others", label: "Others", badgeColor: "#7d8590", icon: MoreHorizontal },
 ];
 
-const FALLBACK_COLORS = [
-  "#c97b6e", "#4a8a7d", "#c9974f", "#7c6a9c", "#6b9e6d",
-  "#5490ab", "#b56b8a", "#a15048", "#8067a0", "#5f7a9e",
-];
-
 export function colorForNewCategory(existingCount) {
-  return FALLBACK_COLORS[existingCount % FALLBACK_COLORS.length];
+  return COLOR_OPTIONS[existingCount % COLOR_OPTIONS.length];
 }
 
 // Stable position of a category within the full list — used to pick a
@@ -54,7 +92,11 @@ export function categoryIndex(allCategories, id) {
 }
 
 export function mergeCategories(customCategories) {
-  const custom = customCategories.map((c) => ({ ...c, icon: MoreHorizontal, isCustom: true }));
+  const custom = customCategories.map((c) => ({
+    ...c,
+    icon: ICON_OPTIONS[c.icon] || MoreHorizontal,
+    isCustom: true,
+  }));
   return [...DEFAULT_CATEGORIES, ...custom];
 }
 

@@ -9,8 +9,8 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { id, label, badgeColor } = req.body;
-  const category = await Category.create({ id, label, badgeColor, householdId: req.householdId });
+  const { id, label, badgeColor, icon } = req.body;
+  const category = await Category.create({ id, label, badgeColor, icon, householdId: req.householdId });
   res.status(201).json(category);
 });
 

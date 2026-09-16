@@ -5,6 +5,9 @@ const categorySchema = new mongoose.Schema({
   id: { type: String, required: true },
   label: { type: String, required: true },
   badgeColor: { type: String, required: true },
+  // Name of one of the fixed icon options in lib/categories.js (ICON_OPTIONS),
+  // not an arbitrary string — falls back to a generic icon if unset/unknown.
+  icon: { type: String, default: "" },
 });
 
 // A category's short id ("gifts") only needs to be unique within its own

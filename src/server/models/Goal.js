@@ -10,6 +10,7 @@ const goalSchema = new mongoose.Schema({
   linkedCategoryId: { type: String, default: null },
   startDate: { type: Date, default: Date.now },
   manualProgress: { type: Number, default: 0 },
+  archived: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 

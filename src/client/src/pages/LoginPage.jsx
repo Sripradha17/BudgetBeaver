@@ -12,6 +12,7 @@ export default function LoginPage({ onLoggedIn }) {
   const theme = mode === "login" ? pageTheme.loginSignIn : pageTheme.loginSignUp;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -24,7 +25,7 @@ export default function LoginPage({ onLoggedIn }) {
       if (mode === "login") {
         await api.login(email, password);
       } else {
-        await api.signup(email, password, inviteCode);
+        await api.signup(email, password, inviteCode, name);
       }
       onLoggedIn();
     } catch (err) {
@@ -141,14 +142,30 @@ export default function LoginPage({ onLoggedIn }) {
             </button>
           </div>
 
-          <div className="mt-3.5">
+          {mode === "signup" && (
+            <div className="mt-3.5">
+              <label className="mb-1.5 block text-[13px] font-bold text-ink/70 sm:text-sm">
+                Your name
+              </label>
+              <input
+                id="login-name-input"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-2xl border border-white/80 px-4 py-2.5 text-[13px] focus:outline-[var(--accent-ring)] sm:text-sm sm:py-2.5"
+                placeholder="What should we call you?"
+                required
+              />
+            </div>
+          )}
+          <div className={mode === "signup" ? "mt-3" : "mt-3.5"}>
             <label className="mb-1.5 block text-[13px] font-bold text-ink/70 sm:text-sm">
               Email
             </label>
             <input
               id="login-email-input"
               type="email"
-              autoFocus
+              autoFocus={mode === "login"}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-2xl border border-white/80 px-4 py-2.5 text-[13px] focus:outline-[var(--accent-ring)] sm:text-sm sm:py-2.5"

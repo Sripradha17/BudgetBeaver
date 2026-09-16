@@ -1,0 +1,19 @@
+name: Keep Render API warm
+
+# Render's free tier spins the server down after ~15 minutes of no requests,
+# so the first request after that takes several seconds to cold-start —
+# which is what makes the app feel slow to load. Pinging /api/health well
+# inside that 15-minute window keeps it warm. (Doesn't help the very first
+# visit after a long stretch of nobody using the app, e.g. overnight — that
+# one still pays the cold-start cost once.)
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: curl -sf "${{ secrets.API_BASE_URL }}/api/health"

@@ -46,4 +46,17 @@ router.post("/regenerate-invite", async (req, res) => {
   res.status(500).json({ error: "Could not generate a unique invite code" });
 });
 
+// Removes a member's login access to the shared household — their past
+// expenses/income stay (those belong to the household, not the user record),
+// so this doesn't lose any financial history. A member can't remove
+// themselves this way to avoid an accidental self-lockout.
+router.delete("/members/:userId", async (req, res) => {
+  if (req.params.userId === req.userId) {
+    return res.status(400).json({ error: "You can't remove yourself from the household" });
+  }
+  const member = await User.findOneAndDelete({ _id: req.params.userId, householdId: req.householdId });
+  if (!member) return res.status(404).json({ error: "Member not found" });
+  res.status(204).end();
+});
+
 export default router;

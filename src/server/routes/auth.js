@@ -3,12 +3,25 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Household, { generateInviteCode } from "../models/Household.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
+// "sudheendra.bhat@gmail.com" -> "Sudheendra" — used when a user has no
+// explicit name set, so the greeting never shows something blank.
+function nameFromEmail(email) {
+  const local = email.split("@")[0].split(/[._-]+/)[0];
+  return local.charAt(0).toUpperCase() + local.slice(1);
+}
+
 function signToken(user) {
   return jwt.sign(
-    { userId: user._id.toString(), householdId: user.householdId.toString(), email: user.email },
+    {
+      userId: user._id.toString(),
+      householdId: user.householdId.toString(),
+      email: user.email,
+      name: user.name || nameFromEmail(user.email),
+    },
     process.env.JWT_SECRET,
     { expiresIn: "90d" }
   );
@@ -31,7 +44,7 @@ async function createHouseholdWithUniqueInvite() {
 // the invite code from an existing household's Settings page joins that
 // household instead, so its data becomes shared rather than duplicated.
 router.post("/signup", async (req, res) => {
-  const { email, password, inviteCode } = req.body;
+  const { email, password, inviteCode, name } = req.body;
   if (!email || !password) return res.status(400).json({ error: "Email and password required" });
   if (password.length < 6) return res.status(400).json({ error: "Password must be at least 6 characters" });
 
@@ -48,9 +61,26 @@ router.post("/signup", async (req, res) => {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = await User.create({ email: normalizedEmail, passwordHash, householdId: household._id });
+  const user = await User.create({
+    email: normalizedEmail,
+    passwordHash,
+    householdId: household._id,
+    name: (name || "").trim(),
+  });
 
   res.status(201).json({ token: signToken(user) });
+});
+
+// Lets a signed-in user change their own display name (shown in per-user
+// greetings). Re-issues the token since the name is baked into its payload.
+router.put("/me", requireAuth, async (req, res) => {
+  const { name } = req.body;
+  if (typeof name !== "string" || !name.trim()) {
+    return res.status(400).json({ error: "Name is required" });
+  }
+  const user = await User.findByIdAndUpdate(req.userId, { name: name.trim() }, { new: true });
+  if (!user) return res.status(404).json({ error: "User not found" });
+  res.json({ token: signToken(user) });
 });
 
 router.post("/login", async (req, res) => {
