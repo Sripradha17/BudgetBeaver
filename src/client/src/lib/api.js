@@ -106,6 +106,7 @@ export const api = {
   createIncome: (data) => request("/income", { method: "POST", body: JSON.stringify(data) }),
   bulkCreateIncome: (rows) =>
     request("/income/bulk", { method: "POST", body: JSON.stringify({ rows }) }),
+  updateIncome: (id, data) => request(`/income/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteIncome: (id) => request(`/income/${id}`, { method: "DELETE" }),
 
   getSettings: () => request("/settings"),

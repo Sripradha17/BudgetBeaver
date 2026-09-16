@@ -38,6 +38,24 @@ router.post("/bulk", async (req, res) => {
   res.status(201).json(created);
 });
 
+router.put("/:id", async (req, res) => {
+  const { date, amount, person, note, foreignCurrency, foreignAmount } = req.body;
+  const update = {};
+  if (date !== undefined) update.date = date;
+  if (amount !== undefined) update.amount = amount;
+  if (person !== undefined) update.person = person;
+  if (note !== undefined) update.note = note;
+  if (foreignCurrency !== undefined) update.foreignCurrency = foreignCurrency;
+  if (foreignAmount !== undefined) update.foreignAmount = foreignAmount;
+  const income = await Income.findOneAndUpdate(
+    { _id: req.params.id, householdId: req.householdId },
+    update,
+    { new: true }
+  );
+  if (!income) return res.status(404).json({ error: "Income not found" });
+  res.json(income);
+});
+
 router.delete("/:id", async (req, res) => {
   await Income.findOneAndDelete({ _id: req.params.id, householdId: req.householdId });
   res.status(204).end();

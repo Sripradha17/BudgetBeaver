@@ -93,6 +93,12 @@ export function DataProvider({ children }) {
     setIncome((prev) => [...created, ...prev]);
   }, []);
 
+  const updateIncome = useCallback(async (id, data) => {
+    const updated = await api.updateIncome(id, data);
+    setIncome((prev) => prev.map((i) => (i._id === id ? updated : i)));
+    return updated;
+  }, []);
+
   const removeIncome = useCallback(async (id) => {
     await api.deleteIncome(id);
     setIncome((prev) => prev.filter((i) => i._id !== id));
@@ -176,6 +182,7 @@ export function DataProvider({ children }) {
     removeExpense,
     addIncome,
     bulkAddIncome,
+    updateIncome,
     removeIncome,
     addCategory,
     removeCategory,

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Trash2, Plus, Wallet, Users, PiggyBank } from "lucide-react";
+import { Trash2, Plus, Wallet, Users, PiggyBank, Pencil, Check, X } from "lucide-react";
 import { useData } from "../context/DataContext.jsx";
 import { useMonth } from "../context/MonthContext.jsx";
 import { monthKey, toInputDate, fromInputDate } from "../lib/month.js";
@@ -14,9 +14,11 @@ import EmptyState from "../components/EmptyState.jsx";
 const PAGE_SIZE = 25;
 
 export default function IncomePage() {
-  const { income, settings, addIncome, removeIncome } = useData();
+  const { income, settings, addIncome, updateIncome, removeIncome } = useData();
   const { key } = useMonth();
   const [page, setPage] = useState(1);
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState(null);
 
   const {
     pending: pendingDelete,
@@ -82,6 +84,27 @@ export default function IncomePage() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function startEdit(item) {
+    setEditingId(item._id);
+    setEditForm({
+      date: toInputDate(item.date),
+      amount: String(item.amount),
+      person: item.person,
+      note: item.note || "",
+    });
+  }
+
+  async function saveEdit(id) {
+    await updateIncome(id, {
+      date: fromInputDate(editForm.date),
+      amount: parseFloat(editForm.amount) || 0,
+      person: editForm.person,
+      note: editForm.note,
+    });
+    setEditingId(null);
+    setEditForm(null);
   }
 
   const fmt = (n) => `${settings.currency}${n.toLocaleString()}`;
@@ -176,7 +199,20 @@ export default function IncomePage() {
           />
         ) : (
           <ul className="rounded-xl border border-mist/70 divide-y divide-mist overflow-hidden">
-            {pageIncome.map((i) => (
+            {pageIncome.map((i) =>
+              editingId === i._id ? (
+                <IncomeEditRow
+                  key={i._id}
+                  editForm={editForm}
+                  setEditForm={setEditForm}
+                  settings={settings}
+                  onSave={() => saveEdit(i._id)}
+                  onCancel={() => {
+                    setEditingId(null);
+                    setEditForm(null);
+                  }}
+                />
+              ) : (
               <li
                 key={i._id}
                 className="relative flex items-center justify-between py-2.5 gap-3 pl-4 pr-3 hover:bg-mist/40 transition-colors duration-150 group"
@@ -204,6 +240,13 @@ export default function IncomePage() {
                     +{fmt(i.amount)}
                   </span>
                   <button
+                    onClick={() => startEdit(i)}
+                    className="text-ink/20 group-hover:text-ink/40 hover:!text-plum transition"
+                    aria-label="Edit income"
+                  >
+                    <Pencil size={15} />
+                  </button>
+                  <button
                     onClick={() => handleDeleteIncome(i)}
                     className="text-ink/20 group-hover:text-ink/40 hover:!text-red-500 transition"
                     aria-label="Delete income"
@@ -212,7 +255,8 @@ export default function IncomePage() {
                   </button>
                 </div>
               </li>
-            ))}
+              )
+            )}
           </ul>
         )}
         <Pagination page={page} pageSize={PAGE_SIZE} total={monthIncome.length} onPageChange={setPage} />
@@ -221,6 +265,59 @@ export default function IncomePage() {
         <UndoToast message={pendingDelete.label} onUndo={undoDelete} onDismiss={dismissUndo} />
       )}
     </div>
+  );
+}
+
+function IncomeEditRow({ editForm, setEditForm, settings, onSave, onCancel }) {
+  return (
+    <li className="py-2.5 px-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <input
+          type="date"
+          value={editForm.date}
+          onChange={(ev) => setEditForm((f) => ({ ...f, date: ev.target.value }))}
+          className="col-span-2 sm:col-span-1 rounded border border-mist px-2 py-1.5 text-xs"
+        />
+        <select
+          value={editForm.person}
+          onChange={(ev) => setEditForm((f) => ({ ...f, person: ev.target.value }))}
+          className="col-span-1 rounded border border-mist px-2 py-1.5 text-xs"
+        >
+          <option value="mine">{settings.myLabel}</option>
+          <option value="spouse">{settings.spouseLabel}</option>
+        </select>
+        <input
+          type="number"
+          step="0.01"
+          value={editForm.amount}
+          onChange={(ev) => setEditForm((f) => ({ ...f, amount: ev.target.value }))}
+          className="col-span-1 rounded border border-mist px-2 py-1.5 text-xs"
+        />
+        <input
+          type="text"
+          placeholder="Note"
+          value={editForm.note}
+          onChange={(ev) => setEditForm((f) => ({ ...f, note: ev.target.value }))}
+          className="col-span-1 rounded border border-mist px-2 py-1.5 text-xs"
+        />
+        <div className="col-span-2 sm:col-span-1 flex items-center gap-2">
+          <button
+            onClick={onSave}
+            className="flex items-center justify-center rounded bg-[var(--accent)] text-white p-1.5 hover:bg-[var(--accent-hover)]"
+            aria-label="Save"
+          >
+            <Check size={14} />
+          </button>
+          <button
+            onClick={onCancel}
+            className="flex items-center justify-center rounded border border-mist p-1.5 hover:bg-mist/40"
+            aria-label="Cancel"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      </div>
+    </li>
   );
 }
 
